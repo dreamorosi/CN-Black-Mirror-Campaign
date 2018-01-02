@@ -1,0 +1,17 @@
+{
+  "name": "black-mirror",
+  "version": "0.0.1",
+  "main": "index.js",
+  "author": "Andrea Amorosi <dreamorosi@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "browser-sync": "^2.23.1",
+    "gulp": "^3.9.1",
+    "gulp-sass": "^3.1.0"
+  },
+  "scripts": {
+    "start": "gulp",
+    "build": "gulp build"
+  }
+}
