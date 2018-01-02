@@ -288,7 +288,8 @@ header {
 .intro {
   width: 100vw;
   height: 100vh;
-  z-index: 1; }
+  z-index: 1;
+  background-color: #F9F7E8; }
   .intro .slide {
     width: 100%;
     height: 100%;
@@ -296,7 +297,6 @@ header {
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    background-color: #F9F7E8;
     transition: background-color 150ms ease-in;
     border: 1px solid #000; }
     .intro .slide .loader, .intro .slide .loader:after {
@@ -340,7 +340,7 @@ header {
       padding-top: 30px;
       opacity: 0;
       text-align: center;
-      transition: opacity 300ms ease-in; }
+      transition: opacity 1000ms ease-in; }
     .intro .slide:nth-child(1) p {
       opacity: 1; }
     .intro .slide:nth-child(13) p {

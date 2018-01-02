@@ -44,6 +44,7 @@ $slide12: #9DA8CB;
   width: 100vw;
   height: 100vh;
   z-index: 1;
+  background-color: $slide1;
 
   .slide {
     width: 100%;
@@ -52,7 +53,6 @@ $slide12: #9DA8CB;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    background-color: $slide1;
     transition: background-color 150ms ease-in;
     border: 1px solid #000;
 
@@ -109,7 +109,7 @@ $slide12: #9DA8CB;
       padding-top: 30px;
       opacity: 0;
       text-align: center;
-      transition: opacity 300ms ease-in;
+      transition: opacity 1000ms ease-in;
     }
 
     &:nth-child(1) {
