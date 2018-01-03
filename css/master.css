@@ -328,7 +328,8 @@ header {
     flex-direction: column; }
     .intro .slide img {
       opacity: 0;
-      transition: opacity 1500ms ease-in; }
+      transition: opacity 1500ms ease-in;
+      width: 164px; }
     .intro .slide p {
       padding: 50px 30px;
       opacity: 0;
