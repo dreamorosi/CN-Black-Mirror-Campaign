@@ -15,6 +15,8 @@ let mainInView = null
 
 // container element
 let rootEl = document.querySelector('.intro')
+let scrollHelper = document.querySelector('.scrollHelper img.down')
+let scrollHelperAlt = document.querySelector('.scrollHelper img.down_alt')
 var colors = [
   "#F9F7E8",
   "#F3E8DA",
@@ -31,12 +33,15 @@ var colors = [
   "#000"
 ]
 
-let maxIntersectionRatio = 0
-
 function onTick(entry) {
   // First run, add just first slide
   if (!inView.size) {
     inView.add(entry[0].target)
+    entry[0].target.querySelector('p').style.opacity = '1'
+    entry[0].target.querySelector('img').style.opacity = '1'
+    setTimeout(function () {
+      scrollHelper.style.opacity = '1'
+    }, 1500)
     return
   }
 
@@ -77,23 +82,25 @@ function onTick(entry) {
     }
 
     let paragraph = target.querySelector('p')
-    let loader = target.querySelector('.loader')
+    let loader = target.querySelector('img')
 
     // console.log('item', target)
     // console.log('item', intersectionRatio)
     if (intersectionRatio > 0.25) {
       rootEl.style.backgroundColor = colors[change.target.dataset.background]
       if (loader) {
-        loader.style.opacity = 1
+        loader.style.opacity = '1'
       }
     } else if (intersectionRatio < 0.25) {
-      paragraph.style.opacity = 0
+      paragraph.style.opacity = '0'
       if (loader) {
-        loader.style.opacity = 0
+        loader.style.opacity = '0'
       }
+      scrollHelper.style.opacity = '0'
+      scrollHelperAlt.style.opacity = '0'
     }
     if (intersectionRatio > 0.5) {
-      paragraph.style.opacity = 1
+      paragraph.style.opacity = '1'
     }
   })
 }
@@ -111,8 +118,15 @@ function offsetTop(el) {
 function lock() {
   let inViewArray = Array.from(inView.values())
   let scrollTo = inViewRatios[0] > inViewRatios[1] ? inViewArray[0] : inViewArray[1]
-  var elOffset = offsetTop(scrollTo)
-  doScrolling(elOffset, 500)
+  if (scrollTo) {
+    var elOffset = offsetTop(scrollTo)
+    doScrolling(elOffset, 500)
+  }
+  if (scrollTo.dataset.background === "12") {
+    scrollHelperAlt.style.opacity = '1'
+  } else {
+    scrollHelper.style.opacity = '1'
+  }
   // console.log('should scroll to', elOffset)
 }
 
@@ -145,7 +159,6 @@ document.onload = function () {
   // list of paragraphs
   let elements = document.querySelectorAll('.intro .slide')
   // down button
-  let scrollHelper = document.querySelector('.scrollHelper img')
   // scrollHelper.addEventListener('touchstart', handleNext, false)
   scrollHelper.addEventListener('click', handleNext, false)
 

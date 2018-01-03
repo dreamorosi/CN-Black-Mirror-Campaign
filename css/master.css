@@ -293,9 +293,15 @@ header {
   left: 0;
   display: flex;
   justify-content: center;
-  align-items: center;
-  -webkit-animation: pulse 2.5s infinite;
-  animation: pulse 2.5s infinite; }
+  align-items: center; }
+  .scrollHelper div {
+    width: 26px; }
+  .scrollHelper img {
+    -webkit-animation: pulse 2.5s infinite;
+    animation: pulse 2.5s infinite;
+    opacity: 0;
+    transition: opacity 2000ms ease-in;
+    position: absolute; }
 
 @keyframes pulse {
   0% {
@@ -313,50 +319,16 @@ header {
   background-color: #F9F7E8; }
   .intro .slide {
     width: 100%;
+    max-width: 100vw;
     height: 100vh;
+    max-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column; }
-    .intro .slide .loader, .intro .slide .loader:after {
-      border-radius: 50%;
-      width: 10em;
-      height: 10em; }
-    .intro .slide .loader {
-      font-size: 10px;
+    .intro .slide img {
       opacity: 0;
-      transition: opacity 1500ms ease-in;
-      text-indent: -9999em;
-      border-top: 1.1em solid rgba(255, 255, 255, 0.4);
-      border-right: 1.1em solid rgba(255, 255, 255, 0.4);
-      border-bottom: 1.1em solid rgba(255, 255, 255, 0.4);
-      border-left: 1.1em solid #ffffff;
-      -webkit-transform: translateZ(0);
-      -ms-transform: translateZ(0);
-      transform: translateZ(0);
-      -webkit-animation: load8 1.1s infinite linear;
-      animation: load8 1.1s infinite linear; }
-      .intro .slide .loader.sticky {
-        position: fixed;
-        position: fixed;
-        left: calc(50% - calc(10em / 2));
-        top: calc(45% - calc(10em / 2)); }
-
-@-webkit-keyframes load8 {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg); }
-  100% {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg); } }
-
-@keyframes load8 {
-  0% {
-    -webkit-transform: rotate(0deg);
-    transform: rotate(0deg); }
-  100% {
-    -webkit-transform: rotate(360deg);
-    transform: rotate(360deg); } }
+      transition: opacity 1500ms ease-in; }
     .intro .slide p {
       padding: 50px 30px;
       opacity: 0;
@@ -365,11 +337,11 @@ header {
       font-family: 'Aileron';
       font-weight: 300;
       font-size: 1.7em; }
+      .intro .slide p.visible {
+        opacity: 1; }
       @media (min-width: 450px) {
         .intro .slide p br {
           display: none; } }
-    .intro .slide:nth-child(1) p, .intro .slide:nth-child(1) .loader {
-      opacity: 1; }
     .intro .slide:nth-child(13) p {
       background: #000;
       color: #fff;
