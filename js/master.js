@@ -17,7 +17,7 @@ let mainInView = null
 let rootEl = document.querySelector('.intro')
 let scrollHelper = document.querySelector('.scrollHelper img.down')
 let scrollHelperAlt = document.querySelector('.scrollHelper img.down_alt')
-var colors = [
+var introColors = [
   "#F9F7E8",
   "#F3E8DA",
   "#EEDACC",
@@ -87,7 +87,7 @@ function onTick(entry) {
     // console.log('item', target)
     // console.log('item', intersectionRatio)
     if (intersectionRatio > 0.25) {
-      rootEl.style.backgroundColor = colors[change.target.dataset.background]
+      rootEl.style.backgroundColor = introColors[change.target.dataset.background]
       if (loader) {
         loader.style.opacity = '1'
       }
@@ -152,7 +152,7 @@ function doScrolling(elementY, duration) {
   })
 }
 
-document.onload = function () {
+function intro () {
   // instantiate a new Intersection Observer
   observer  = new IntersectionObserver(onTick, options)
 
@@ -166,4 +166,16 @@ document.onload = function () {
   for (let elm of elements) {
     observer.observe(elm)
   }
+}
+
+var introColors = [
+  "#F9F7E8",
+  "#A0AAD1",
+  "#BCB6C8",
+  "#D7D8DC"
+]
+
+document.onload = function () {
+  // intro()
+  console.log('ready for part 1')
 }()
