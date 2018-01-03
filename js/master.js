@@ -1,37 +1,20 @@
-var loader = document.querySelector('.loader')
-
-window.onscroll = function () {
-  // stickyElement(loader)
+// list of options for observer
+let options = {
+  threshold: [0, 0.25, 0.5, 0.75]
 }
+// create observer reference
+let observer
+// elements in currently in viewport (assumes <= 2)
+let inView = new Set()
+//
+let inViewRatios = []
+// contains scrollId, if has value the page is scrolling and will call lock()
+let scrollId = null
+// contains reference to main item
+let mainInView = null
 
-function getWidth () {
-  return Math.max(
-    document.body.scrollWidth,
-    document.documentElement.scrollWidth,
-    document.body.offsetWidth,
-    document.documentElement.offsetWidth,
-    document.documentElement.clientWidth
-  )
-}
-
-function triggerPos (el, buffer) {
-  return el.offsetTop - el.height + buffer
-}
-
-function stickyElement (element, className = 'sticky') {
-  if (window.pageYOffset > element.offsetTop) {
-    element.classList.add(className)
-  } else {
-    element.classList.remove(className)
-  }
-}
-
-var options = {
-  root: null,
-  threshold: [0.25, 0.5, 0.75]
-}
-
-var intro = document.querySelector('.intro')
+// container element
+let rootEl = document.querySelector('.intro')
 var colors = [
   "#F9F7E8",
   "#F3E8DA",
@@ -48,80 +31,126 @@ var colors = [
   "#000"
 ]
 
-var viewer = {
-  direction: null,
-  isScrolling: false,
-  scrollId: null,
-  lastSnap: {},
-  tick: function (snap) {
-    this.direction = this.lastSnap.intersectionRatio < snap.intersectionRatio
-    this.lastSnap = snap
-    if (this.scrollId === null) {
-      this.scrollId = setTimeout(viewer.lock, 0)
-    } else {
-      clearTimeout(this.scrollId)
-      this.scrollId = setTimeout(viewer.lock, 2000)
-      this.isScrolling = true
-    }
-  },
-  snap: function (entries, observer) {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) {
-        return
-      }
-      viewer.tick(entry)
-      // console.log(entry.target)
-      if (viewer.direction && entry.intersectionRatio > 0 && entry.intersectionRatio < 0.5) {
-        // console.log('is entering', entry.target)
-        var d = entry.target.querySelector('p')
-        d.style.opacity = 1
-      }
+let maxIntersectionRatio = 0
 
-      if (viewer.direction && entry.intersectionRatio < 0.6 && entry.intersectionRatio > 0.4) {
-        // let c = Array.from(entry.target.parentElement.children)
-        // console.log(c.indexOf(entry.target))
-        let prevColor = entry.target.dataset.background - 1
-        console.log('going to prev', prevColor)
-        intro.style.backgroundColor = colors[prevColor]
-      }
-
-      if (!viewer.direction && entry.intersectionRatio < 1 && entry.intersectionRatio > 0.5) {
-        // console.log('is exiting', entry.target)
-        var d = entry.target.querySelector('p')
-        console.log(d)
-        d.style.opacity = 0
-      }
-
-      if (!viewer.direction && entry.intersectionRatio < 0.6 && entry.intersectionRatio > 0.4) {
-        let nextColor = entry.target.dataset.background + 1
-        console.log('going to next', nextColor)
-        intro.style.backgroundColor = colors[nextColor]
-      }
-
-      // Each entry describes an intersection change for one observed
-      // target element:
-      //   entry.boundingClientRect
-      //   entry.intersectionRatio
-      //   entry.intersectionRect
-      //   entry.isIntersecting
-      //   entry.rootBounds
-      //   entry.target
-      //   entry.time
-    })
-  },
-  lock: function () {
-    viewer.isScrolling = false
-    // console.log(viewer)
+function onTick(entry) {
+  // First run, add just first slide
+  if (!inView.size) {
+    inView.add(entry[0].target)
+    return
   }
+
+  entry.forEach((change) => {
+    let { isIntersecting, intersectionRatio, target } = change
+    if(isIntersecting && intersectionRatio > 0) {
+      // Reset scrolling lock timer
+      if (scrollId === null) {
+        scrollId = setTimeout(lock, 2000)
+      } else {
+        clearTimeout(scrollId)
+        scrollId = setTimeout(lock, 2000)
+      }
+
+      // Add to elements in view Set
+      if (!inView.has(target)) {
+        inView.add(target)
+        // console.info('it\s now in', target)
+      }
+
+      // Decide wich is the element with max ratio
+      // TODO: remove fixed number
+      inViewArray = Array.from(inView.values())
+      if (inViewArray[0] == target) {
+        inViewRatios[0] = intersectionRatio
+      }
+      if (inViewArray[1] == target) {
+        inViewRatios[1] = intersectionRatio
+      }
+    } else {
+      inView.delete(target)
+      // console.info('it\s now out', target)
+      return
+    }
+
+    if (!inView.has(target)) {
+      return
+    }
+
+    let paragraph = target.querySelector('p')
+    let loader = target.querySelector('.loader')
+
+    // console.log('item', target)
+    // console.log('item', intersectionRatio)
+    if (intersectionRatio > 0.25) {
+      rootEl.style.backgroundColor = colors[change.target.dataset.background]
+      if (loader) {
+        loader.style.opacity = 1
+      }
+    } else if (intersectionRatio < 0.25) {
+      paragraph.style.opacity = 0
+      if (loader) {
+        loader.style.opacity = 0
+      }
+    }
+    if (intersectionRatio > 0.5) {
+      paragraph.style.opacity = 1
+    }
+  })
+}
+
+function handleNext () {
+  console.log('pressed')
+}
+
+function offsetTop(el) {
+  var rect = el.getBoundingClientRect()
+  var scrollTop = window.pageYOffset || document.documentElement.scrollTop
+  return rect.top + scrollTop
+}
+
+function lock() {
+  let inViewArray = Array.from(inView.values())
+  let scrollTo = inViewRatios[0] > inViewRatios[1] ? inViewArray[0] : inViewArray[1]
+  var elOffset = offsetTop(scrollTo)
+  doScrolling(elOffset, 500)
+  // console.log('should scroll to', elOffset)
+}
+
+function doScrolling(elementY, duration) {
+  var startingY = window.pageYOffset
+  var diff = elementY - startingY
+  var start
+
+  // Bootstrap our animation - it will get called right before next frame shall be rendered.
+  window.requestAnimationFrame(function step(timestamp) {
+    if (!start) start = timestamp
+    // Elapsed miliseconds since start of scrolling.
+    var time = timestamp - start
+    // Get percent of completion in range [0, 1].
+    var percent = Math.min(time / duration, 1)
+
+    window.scrollTo(0, startingY + diff * percent)
+
+    // Proceed with animation as long as we wanted it to.
+    if (time < duration) {
+      window.requestAnimationFrame(step)
+    }
+  })
 }
 
 document.onload = function () {
-  var observer = new IntersectionObserver(viewer.snap, options)
-  var target = document.querySelector('.intro .slide:nth-child(1)')
+  // instantiate a new Intersection Observer
+  observer  = new IntersectionObserver(onTick, options)
 
-  // var observer2 = new IntersectionObserver(viewer.snap, options)
-  var target2 = document.querySelector('.intro .slide:nth-child(2)')
+  // list of paragraphs
+  let elements = document.querySelectorAll('.intro .slide')
+  // down button
+  let scrollHelper = document.querySelector('.scrollHelper img')
+  // scrollHelper.addEventListener('touchstart', handleNext, false)
+  scrollHelper.addEventListener('click', handleNext, false)
 
-  observer.observe(target)
-  observer.observe(target2)
+  // observe all elements
+  for (let elm of elements) {
+    observer.observe(elm)
+  }
 }()

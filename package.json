@@ -1,6 +1,6 @@
 {
   "name": "black-mirror",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "main": "index.js",
   "author": "Andrea Amorosi <dreamorosi@gmail.com>",
   "license": "MIT",
