@@ -17,21 +17,6 @@ let mainInView = null
 let rootEl = document.querySelector('.intro')
 let scrollHelper = document.querySelector('.scrollHelper img.down')
 let scrollHelperAlt = document.querySelector('.scrollHelper img.down_alt')
-var introColors = [
-  "#F9F7E8",
-  "#F3E8DA",
-  "#EEDACC",
-  "#E8CCBF",
-  "#E5C4B9",
-  "#E5C4B9",
-  "#E5C4B9",
-  "#DEC2BB",
-  "#CCBBC1",
-  "#BBB5C7",
-  "#A8ADCA",
-  "#9DA8CB",
-  "#000"
-]
 
 function onTick(entry) {
   // First run, add just first slide
@@ -152,7 +137,7 @@ function doScrolling(elementY, duration) {
   })
 }
 
-function intro () {
+function intro_old () {
   // instantiate a new Intersection Observer
   observer  = new IntersectionObserver(onTick, options)
 
@@ -207,6 +192,7 @@ function partOne () {
   submitForm.addEventListener('click', submitFormOne, false)
 }
 
+// INTRO
 let introTexts = [
   'Piensa en tu día a día.',
   'En las 9 horas de trabajo<br /> y tus 8 durmiendo.',
@@ -214,79 +200,54 @@ let introTexts = [
   'Piensa en cuánto tiempo<br /> le dedicas al móvil.',
   'Haz el cálculo mental.',
   'Mira los mejores años de<br /> tu vida esfumándose.',
-  'Asómate al espejo y obsérvate.',
+  'Asómate al espejo<br /> y obsérvate.',
   '¿Cuánto vale tu vida?'
 ]
 
-const intr =
-
-function intro_alt () {
-  var last_known_scroll_position = 0
-  var ticking = false
-  let scrollId = null
-  let thisScroll = []
-
+function intro () {
   let intro = document.querySelector('.intro')
-  let paragraph = intro.querySelector('p')
-  let intr = new Intro(intro)
-  intr.setScenes(introTexts)
-  intr.toggleLoader()
-  setTimeout(function () {
-    intr.showCurrent()
-  }, 500)
-  // intr.scrollGrain()
-  console.log('ok')
-
-  function doSomething(scroll_pos) {
-    // do something with the scroll position
-    if (scrollId === null) {
-      scrollId = setTimeout(finishedScrolling, 300)
-    } else {
-      clearTimeout(scrollId)
-      scrollId = setTimeout(finishedScrolling, 300)
-    }
-    thisScroll.push(scroll_pos)
-  }
-
-  function viewport() {
-    var e = window, a = 'inner'
-    if (!('innerWidth' in window )) {
-      a = 'client'
-      e = document.documentElement || document.body
-    }
-    return { width : e[ a+'Width' ] , height : e[ a+'Height' ] }
-  }
-
-  function finishedScrolling () {
-    var sum = thisScroll.reduce(function(a, b) { return a + b; })
-    var avg = sum / thisScroll.length
-    var clientW = viewport().width
-    thisScroll = []
-    if (avg > 0) {
-      console.log('Up!')
-      clientW > 500 ? intr.prev() : intr.next()
-    } else {
-      console.log('Down!')
-      // intr.next()
-      clientW > 500 ? intr.next() : intr.prev()
-      // intr.prev()
-    }
-  }
+  let intr = new Intro({
+    root: intro,
+    scenes: introTexts,
+    scrollHelper: scrollHelperAlt,
+    scrollGrain: true
+  })
 }
 
+// function viewport() {
+//   var e = window, a = 'inner'
+//   if (!('innerWidth' in window )) {
+//     a = 'client'
+//     e = document.documentElement || document.body
+//   }
+//   return { width : e[ a+'Width' ] , height : e[ a+'Height' ] }
+// }
+
 class Intro {
-  constructor (el) {
-    if (!el) {
+  constructor (settings) {
+    if (!settings.root) {
       console.error('No root element passed.')
       return
     }
-    this.root = el
+    if (!settings.scenes || !settings.scenes.length || !Array.isArray(settings.scenes)) {
+      console.error('No scenes array passed.')
+      return
+    }
+    this.root = settings.root
+    // this.clientW = viewport().width
+    // this.clientH = viewport().height
+
     this.currentScene = 0
     this.isLoaderVisible = 0
-    this.isTransitioning = 0
+    // An animation is running, discard this scroll evt ? 1 : 0
+    this.isTransitioning = 1
+    // The main thread is busy, discard this scroll evt ? 1 : 0
     this.thtrottling = 0
+    this.scrollId = null
+    this.scrollDelta = []
     this.paragraph = this.root.querySelector('p')
     this.loader = this.root.querySelector('img')
+    this.scrollHelper = settings.scrollHelper
 
     if (!this.paragraph) {
       console.error('No paragraph element found.')
@@ -296,20 +257,66 @@ class Intro {
       console.error('No loader element found.')
       return
     }
+    if (!this.scrollHelper) {
+      console.error('No scrollHelper element passed.')
+      return
+    }
+
+    this.showCurrent = this.showCurrent.bind(this)
+    this.scrollGrain = this.scrollGrain.bind(this)
+    this.scrollWatcher = this.scrollWatcher.bind(this)
+    this.scrollCoach = this.scrollCoach.bind(this)
+    this.transitionFinished = this.transitionFinished.bind(this)
+
+    if (settings.scrollGrain) {
+      window.addEventListener('scroll', this.scrollWatcher)
+      // this.paragraph.addEventListener('scroll', this.scrollWatcher)
+    }
+
+    this.scenes = settings.scenes
+    this.toggleLoader()
+    let that = this
+    setTimeout(function () {
+      that.showCurrent()
+    }, 500)
   }
 
   scrollGrain () {
-    this.paragraph.addEventListener('scroll', function(e) {
-      let lastKnownPos = window.scrollY
-      if (!this.thtrottling && !this.isTransitioning) {
-        window.requestAnimationFrame(function() {
-          doSomething(lastKnownPos)
-          this.thtrottling = 0
-        })
+    if (this.scrollId === null) {
+      this.scrollId = setTimeout(this.scrollCoach, 300)
+    } else {
+      clearTimeout(this.scrollId)
+      this.scrollId = setTimeout(this.scrollCoach, 300)
+    }
 
-        this.thtrottling = 1
-      }
-    })
+    this.scrollDelta.push(window.scrollY)
+    // this.scrollDelta.push(this.paragraph.scrollTop)
+
+    this.thtrottling = 0
+  }
+
+  scrollWatcher () {
+    if (!this.thtrottling && !this.isTransitioning) {
+      // Exec only if main thread is not busy
+      window.requestAnimationFrame(this.scrollGrain)
+
+      this.thtrottling = 1
+    }
+  }
+
+  scrollCoach () {
+    let sum = this.scrollDelta.reduce((a, b) => a + b )
+    let avg = sum / this.scrollDelta.length
+    this.scrollDelta = []
+    if (avg > 0.5) {
+      console.log('Up!')
+      this.next()
+    //   this.clientW > 500 ? this.prev() : this.next()
+    } else {
+      console.log('Down!')
+      this.prev()
+    //   this.clientW > 500 ? this.next() : this.prev()
+    }
   }
 
   toggleLoader () {
@@ -322,9 +329,32 @@ class Intro {
     }
   }
 
+  transitionStarted () {
+    this.isTransitioning = 1
+  }
+
+  transitionFinished () {
+    this.isTransitioning = 0
+  }
+
   showCurrent () {
-    this.paragraph.innerHTML = `> ${this.scenes[this.currentScene]} /`
-    this.paragraph.style.opacity = '1'
+    this.paragraph.style.opacity = '0'
+    let that = this
+    if (this.currentScene === this.scenes.length - 1) {
+      this.toggleLoader()
+      this.loader.src = 'http://placehold.it/100x100'
+      this.loader.addEventListener('load', function () {
+        that.toggleLoader()
+        this.scrollHelper.style.opacity = '1'
+      })
+    }
+    setTimeout(function () {
+      that.paragraph.innerHTML = `> ${that.scenes[that.currentScene]} /`
+      that.paragraph.style.opacity = '1'
+
+      document.body.scrollTop = document.documentElement.scrollTop = 1
+      setTimeout(that.transitionFinished, 500)
+    }, 1000)
   }
 
   setScenes (array) {
@@ -337,25 +367,24 @@ class Intro {
 
   prev () {
     if (this.currentScene > 0) {
+      this.transitionStarted()
       this.currentScene--
-      // this.paragraph.innerHTML = `> ${this.scenes[this.currentScene]} /`
-      this.paragraph.style.opacity = '0'
+      this.showCurrent()
       console.log(this.scenes[this.currentScene], 'PREV')
     }
   }
 
   next () {
     if (this.currentScene < this.scenes.length - 1) {
+      this.transitionStarted()
       this.currentScene++
-      this.paragraph.style.opacity = '0'
-      setTimeout(this.showCurrent.bind(this), 1000)
+      this.showCurrent()
       console.log(this.scenes[this.currentScene], 'NEXT')
     }
   }
 }
 
 document.onload = function () {
-  // intro()
   // partOne()
-  // intro_alt()
+  intro()
 }()
