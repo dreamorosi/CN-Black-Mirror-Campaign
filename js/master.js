@@ -386,5 +386,5 @@ class Intro {
 
 document.onload = function () {
   // partOne()
-  intro()
+  // intro()
 }()
