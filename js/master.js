@@ -207,7 +207,155 @@ function partOne () {
   submitForm.addEventListener('click', submitFormOne, false)
 }
 
+let introTexts = [
+  'Piensa en tu día a día.',
+  'En las 9 horas de trabajo<br /> y tus 8 durmiendo.',
+  'Piensa en tu tiempo libre.',
+  'Piensa en cuánto tiempo<br /> le dedicas al móvil.',
+  'Haz el cálculo mental.',
+  'Mira los mejores años de<br /> tu vida esfumándose.',
+  'Asómate al espejo y obsérvate.',
+  '¿Cuánto vale tu vida?'
+]
+
+const intr =
+
+function intro_alt () {
+  var last_known_scroll_position = 0
+  var ticking = false
+  let scrollId = null
+  let thisScroll = []
+
+  let intro = document.querySelector('.intro')
+  let paragraph = intro.querySelector('p')
+  let intr = new Intro(intro)
+  intr.setScenes(introTexts)
+  intr.toggleLoader()
+  setTimeout(function () {
+    intr.showCurrent()
+  }, 500)
+  // intr.scrollGrain()
+  console.log('ok')
+
+  function doSomething(scroll_pos) {
+    // do something with the scroll position
+    if (scrollId === null) {
+      scrollId = setTimeout(finishedScrolling, 300)
+    } else {
+      clearTimeout(scrollId)
+      scrollId = setTimeout(finishedScrolling, 300)
+    }
+    thisScroll.push(scroll_pos)
+  }
+
+  function viewport() {
+    var e = window, a = 'inner'
+    if (!('innerWidth' in window )) {
+      a = 'client'
+      e = document.documentElement || document.body
+    }
+    return { width : e[ a+'Width' ] , height : e[ a+'Height' ] }
+  }
+
+  function finishedScrolling () {
+    var sum = thisScroll.reduce(function(a, b) { return a + b; })
+    var avg = sum / thisScroll.length
+    var clientW = viewport().width
+    thisScroll = []
+    if (avg > 0) {
+      console.log('Up!')
+      clientW > 500 ? intr.prev() : intr.next()
+    } else {
+      console.log('Down!')
+      // intr.next()
+      clientW > 500 ? intr.next() : intr.prev()
+      // intr.prev()
+    }
+  }
+}
+
+class Intro {
+  constructor (el) {
+    if (!el) {
+      console.error('No root element passed.')
+      return
+    }
+    this.root = el
+    this.currentScene = 0
+    this.isLoaderVisible = 0
+    this.isTransitioning = 0
+    this.thtrottling = 0
+    this.paragraph = this.root.querySelector('p')
+    this.loader = this.root.querySelector('img')
+
+    if (!this.paragraph) {
+      console.error('No paragraph element found.')
+      return
+    }
+    if (!this.loader) {
+      console.error('No loader element found.')
+      return
+    }
+  }
+
+  scrollGrain () {
+    this.paragraph.addEventListener('scroll', function(e) {
+      let lastKnownPos = window.scrollY
+      if (!this.thtrottling && !this.isTransitioning) {
+        window.requestAnimationFrame(function() {
+          doSomething(lastKnownPos)
+          this.thtrottling = 0
+        })
+
+        this.thtrottling = 1
+      }
+    })
+  }
+
+  toggleLoader () {
+    if (this.isLoaderVisible) {
+      this.loader.style.opacity = '0'
+      this.isLoaderVisible = 0
+    } else {
+      this.loader.style.opacity = '1'
+      this.isLoaderVisible = 1
+    }
+  }
+
+  showCurrent () {
+    this.paragraph.innerHTML = `> ${this.scenes[this.currentScene]} /`
+    this.paragraph.style.opacity = '1'
+  }
+
+  setScenes (array) {
+    if (!Array.isArray(array) || array.length === 0) {
+      console.error('No array passed')
+    }
+
+    this.scenes = array
+  }
+
+  prev () {
+    if (this.currentScene > 0) {
+      this.currentScene--
+      // this.paragraph.innerHTML = `> ${this.scenes[this.currentScene]} /`
+      this.paragraph.style.opacity = '0'
+      console.log(this.scenes[this.currentScene], 'PREV')
+    }
+  }
+
+  next () {
+    if (this.currentScene < this.scenes.length - 1) {
+      this.currentScene++
+      this.paragraph.style.opacity = '0'
+      setTimeout(this.showCurrent.bind(this), 1000)
+      console.log(this.scenes[this.currentScene], 'NEXT')
+    }
+  }
+}
+
 document.onload = function () {
   // intro()
-  partOne()
+  // partOne()
+  // intro_alt()
 }()
