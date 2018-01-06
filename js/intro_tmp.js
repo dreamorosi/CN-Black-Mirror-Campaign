@@ -14,11 +14,11 @@ let introTexts = [
 
 function intro () {
   let introElement = document.querySelector('.intro')
-  let scrollHelperAlt = document.querySelector('.scrollHelper img.down_alt')
+  let scrollHelper = document.querySelector('.scrollHelper img')
   let intro = new Intro({
     root: introElement,
     scenes: introTexts,
-    scrollHelper: scrollHelperAlt,
+    scrollHelper: scrollHelper,
     scrollGrain: true
   })
 

@@ -149,54 +149,6 @@
 //   }
 // }
 
-// var introColors = [
-//   '#F9F7E8',
-//   '#A0AAD1',
-//   '#BCB6C8',
-//   '#D7D8DC'
-// ]
-
-// function submitFormOne () {
-//   let form = document.querySelector('.part-one .slide form')
-//   let age = parseInt(form.querySelector('input[name="age"]').value)
-//   let time = parseInt(form.querySelector('input[name="time"]').value)
-//
-//   if (time > 0 && time > 6) {
-//     console.log('vida not found')
-//     return
-//   }
-//
-//   let statAge = 82
-//   let days = (statAge - age) * 365
-//   let hours = 24 * days
-//   console.log(days)
-//   console.log(hours)
-// }
-
-// function showNotFound () {
-//   let notFound = '<div class="slide not-found" data-index="-1"><h2>Vida<br /> not<br /> found</h2><div class="sectionHelper"><p>Volver al inicio</p></div></div>'
-//   let slideOne = document.querySelector('.part-one .slide:nth-child(1)')
-//   insertAfter(notFound)
-// }
-
-// function insertAfter (newNode, referenceNode) {
-//   referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling)
-// }
-
-// function partOne () {
-//   let submitForm = document.querySelector('.part-one .slide:nth-child(1) .sectionHelper')
-//   submitForm.addEventListener('click', submitFormOne, false)
-// }
-
-// function viewport() {
-//   var e = window, a = 'inner'
-//   if (!('innerWidth' in window )) {
-//     a = 'client'
-//     e = document.documentElement || document.body
-//   }
-//   return { width : e[ a+'Width' ] , height : e[ a+'Height' ] }
-// }
-
 document.onload = (function () {
   // partOne()
   // intro()
