@@ -23,6 +23,7 @@ class Intro {
 
     this.currentScene = 0
     this.isLoaderVisible = 0
+    this.isHelperVisible = 0
     // An animation is running, discard this scroll evt ? 1 : 0
     this.isTransitioning = 1
     // The main thread is busy, discard this scroll evt ? 1 : 0
@@ -32,6 +33,7 @@ class Intro {
     this.paragraph = this.root.querySelector('p')
     this.loader = this.root.querySelector('img')
     this.scrollHelper = settings.scrollHelper
+    this.scrollHelperLongWait = null
 
     if (!this.paragraph) {
       console.error('No paragraph element found.')
@@ -51,6 +53,10 @@ class Intro {
     this.scrollWatcher = this.scrollWatcher.bind(this)
     this.scrollCoach = this.scrollCoach.bind(this)
     this.transitionFinished = this.transitionFinished.bind(this)
+    this.toggleLoader = this.toggleLoader.bind(this)
+    this.toggleScrollHelper = this.toggleScrollHelper.bind(this)
+    this.showScrollHelper = this.showScrollHelper.bind(this)
+    this.hideScrollHelper = this.hideScrollHelper.bind(this)
 
     if (settings.scrollGrain) {
       window.addEventListener('scroll', this.scrollWatcher)
@@ -113,8 +119,30 @@ class Intro {
     }
   }
 
+  toggleScrollHelper (expires = true) {
+    if (this.isHelperVisible) {
+      this.hideScrollHelper()
+    } else {
+      this.showScrollHelper()
+      if (expires) {
+        setTimeout(this.hideScrollHelper, 5000)
+      }
+    }
+  }
+
+  hideScrollHelper () {
+    this.scrollHelper.style.opacity = '0'
+    this.isHelperVisible = 0
+  }
+
+  showScrollHelper () {
+    this.scrollHelper.style.opacity = '1'
+    this.isHelperVisible = 1
+  }
+
   transitionStarted () {
     this.isTransitioning = 1
+    clearTimeout(this.scrollHelperLongWait)
   }
 
   transitionFinished () {
@@ -129,8 +157,8 @@ class Intro {
       this.loader.src = 'http://placehold.it/100x100'
       this.loader.addEventListener('load', function () {
         that.toggleLoader()
-        this.scrollHelper.style.opacity = '1'
       })
+      setTimeout(this.showScrollHelper, 3000)
     }
     setTimeout(function () {
       that.paragraph.innerHTML = `> ${that.scenes[that.currentScene]} /`
@@ -138,6 +166,8 @@ class Intro {
 
       document.body.scrollTop = document.documentElement.scrollTop = 1
       setTimeout(that.transitionFinished, 500)
+      setTimeout(that.toggleScrollHelper, 1500)
+      this.scrollHelperLongWait = setTimeout(that.toggleScrollHelper, 16500)
     }, 1000)
   }
 
@@ -152,6 +182,7 @@ class Intro {
   prev () {
     if (this.currentScene > 0) {
       this.transitionStarted()
+      this.hideScrollHelper()
       this.currentScene--
       this.showCurrent()
       console.log(this.scenes[this.currentScene], 'PREV')
@@ -161,6 +192,7 @@ class Intro {
   next () {
     if (this.currentScene < this.scenes.length - 1) {
       this.transitionStarted()
+      this.hideScrollHelper()
       this.currentScene++
       this.showCurrent()
       console.log(this.scenes[this.currentScene], 'NEXT')
