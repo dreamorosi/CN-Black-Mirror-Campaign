@@ -369,3 +369,5 @@ class One {
     }
   }
 }
+
+export default One
