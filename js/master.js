@@ -2,6 +2,7 @@ import '../scss/master.scss'
 import 'Intersection-observer'
 import Intro from './Intro_class'
 import One from './One_Class'
+import Two from './Two_Class'
 
 // INTRO
 let introTexts = [
@@ -15,17 +16,16 @@ let introTexts = [
   '¿Cuánto vale tu vida?'
 ]
 
-function intro () {
+function introInit () {
   let introElement = document.querySelector('.intro')
   let scrollHelper = document.querySelector('.scrollHelper img')
-  let intro = new Intro({
+
+  window.intro = new Intro({
     root: introElement,
     scenes: introTexts,
     scrollHelper: scrollHelper,
     scrollGrain: true
   })
-
-  console.log(intro)
 }
 
 function oneInit () {
@@ -37,12 +37,21 @@ function oneInit () {
     scrollHelper: scrollHelper,
     scrollGrain: false
   })
+}
 
-  console.log(one)
+function twoInit () {
+  let partTwo = document.querySelector('.part-two')
+  let scrollHelper = document.querySelector('.scrollHelper img')
+
+  window.two = new Two({
+    root: partTwo,
+    scrollHelper: scrollHelper,
+    scrollGrain: false
+  })
 }
 
 document.onload = (function () {
-  // intro()
-
-  oneInit()
+  introInit()
+  // oneInit()
+  // twoInit()
 })()
