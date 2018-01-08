@@ -1,4 +1,5 @@
 import '../scss/master.scss'
+import 'Intersection-observer'
 import Intro from './Intro_class'
 import One from './One_Class'
 
@@ -27,11 +28,11 @@ function intro () {
   console.log(intro)
 }
 
-function one () {
+function oneInit () {
   let partOne = document.querySelector('.part-one')
   let scrollHelper = document.querySelector('.scrollHelper img')
 
-  let one = new One({
+  window.one = new One({
     root: partOne,
     scrollHelper: scrollHelper,
     scrollGrain: false
@@ -42,5 +43,6 @@ function one () {
 
 document.onload = (function () {
   // intro()
-  one()
+
+  oneInit()
 })()

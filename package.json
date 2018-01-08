@@ -30,5 +30,7 @@
     "build": "npm run clean && npm run prod",
     "start": "NODE_ENV=development webpack-dev-server"
   },
-  "dependencies": {}
+  "dependencies": {
+    "intersection-observer": "^0.5.0"
+  }
 }

@@ -24,7 +24,7 @@ class One {
     }
 
     this.clientW = viewport().width
-    this.currentScene = 2
+    this.currentScene = 0
     // An animation is running, discard this scroll evt ? 1 : 0
     this.isTransitioning = 1
     // The main thread is busy, discard this scroll evt ? 1 : 0
@@ -56,7 +56,13 @@ class One {
     this.showFirst = this.showFirst.bind(this)
     this.showSecond = this.showSecond.bind(this)
     this.hideSecond = this.hideSecond.bind(this)
+    this.showThird = this.showThird.bind(this)
+    this.hideThird = this.hideThird.bind(this)
+    this.hideFourth = this.hideFourth.bind(this)
     this.observeSecondHandler = this.observeSecondHandler.bind(this)
+    this.observeThirdHandler = this.observeThirdHandler.bind(this)
+    this.observeFourthHandler = this.observeFourthHandler.bind(this)
+    this.toggleElementOpacity = this.toggleElementOpacity.bind(this)
 
     if (settings.scrollGrain) {
       window.addEventListener('scroll', this.scrollWatcher)
@@ -64,10 +70,17 @@ class One {
 
     this.first = {}
     this.second = {}
+    this.third = {}
+    this.elements = {}
+    this.fourth = {}
     this.prepareFirst()
     // this.prepareSecond()
+    // this.prepareThird()
+    // this.prepareFourth()
 
-    this.showCurrent()
+    setTimeout(() => {
+      this.showCurrent()
+    }, 300)
   }
 
   scrollGrain () {
@@ -131,7 +144,8 @@ class One {
     this.isTransitioning = 0
   }
 
-  checkReferences (obj) {
+  // TODO: refactor when scenes are in common array
+  checkReferences (obj, name) {
     let result = true
     let keys = Object.keys(obj)
     keys.forEach(key => {
@@ -140,7 +154,9 @@ class One {
       }
     })
 
-    return result
+    if (!result) {
+      throw Error(`Scene ${name} is missing elements`)
+    }
   }
 
   prepareFirst () {
@@ -149,10 +165,9 @@ class One {
     this.first.firstInput = this.scenes[0].querySelector('input[name="age"]')
     this.first.secondLabel = this.scenes[0].querySelector('label[for="time"]')
     this.first.secondInput = this.scenes[0].querySelector('input[name="time"]')
-    if (!this.checkReferences(this.first)) {
-      console.error('Scene one is missing elements.')
-      return
-    }
+
+    this.checkReferences(this.first, 'one')
+
     this.isFormFilled = 0
     this.formValues = {
       age: null,
@@ -241,10 +256,7 @@ class One {
 
     this.second.graph = this.scenes[1].querySelector('.right-side img')
 
-    if (!this.checkReferences(this.second)) {
-      console.error('Scene two is missing elements')
-      return
-    }
+    this.checkReferences(this.second, 'two')
 
     if (this.clientW < 500) {
       this.observeSecond()
@@ -296,8 +308,10 @@ class One {
   hideSecond () {
     // remove evt listener from scrollHelper
     this.scrollHelper.removeEventListener('click', this.hideSecond)
-    // stop observer
-    this.secondObserver.unobserve(this.second.firstParagraph)
+    // stop observer (if running)
+    if (this.secondObserver) {
+      this.secondObserver.unobserve(this.second.firstParagraph)
+    }
     // fadeout content
     this.scenes[1].querySelector('.left-side').style.opacity = '0'
     this.scenes[1].querySelector('.right-side').style.opacity = '0'
@@ -310,28 +324,416 @@ class One {
     setTimeout(this.next, 1200)
   }
 
-  prepareThird () {
+  observeThird () {
+    let options = {
+      threshold: [0.7]
+    }
+    this.thirdObserver = new IntersectionObserver(this.observeThirdHandler, options)
 
+    let { boxes } = this.third
+    boxes.forEach(box => this.thirdObserver.observe(box.children[0].node))
+  }
+
+  observeThirdHandler (entries) {
+    if (entries.length === 3) {
+      return
+    }
+
+    entries.forEach(entry => {
+      let { target } = entry
+      let { boxes, spacers } = this.third
+      let idx = target.dataset.idx
+      this.toggleElementOpacity(boxes[idx].children[0])
+      setTimeout(() => {
+        this.toggleElementOpacity(boxes[idx].children[1])
+      }, 1000)
+
+      if (idx < 2) {
+        setTimeout(() => {
+          this.toggleElementOpacity(spacers[idx])
+        }, 2000)
+      } else {
+        setTimeout(() => {
+          this.toggleScrollHelper()
+          this.scrollHelper.addEventListener('click', this.hideThird)
+          this.prepareFourth()
+        }, 2000)
+      }
+    })
+  }
+
+  prepareThird () {
+    let currentScene = this.scenes[2]
+    this.third = {
+      title: {
+        node: currentScene.querySelector('h3'),
+        state: {
+          isVisible: 0
+        }
+      },
+      boxes: []
+    }
+
+    // Select container blocks
+    let tmp = Array.from(currentScene.querySelectorAll('.content > div'))
+    this.third.boxes = tmp.map(node => ({
+      node: node,
+      state: {
+        isVisible: parseInt(window.getComputedStyle(node).getPropertyValue('opacity'))
+      }
+    }))
+
+    // OPTIMIZE: test references
+
+    // Select img and text inside a box
+    this.third.boxes = this.third.boxes.map(box => {
+      let node = box.node.querySelector('img')
+      // IDEA: try parseInt(window.getComputedStyle(node).getPropertyValue('opacity'))
+      let imgObj = {
+        node: node,
+        state: {
+          isVisible: 0
+        }
+      }
+
+      // OPTIMIZE: extrapolate utility
+
+      let textNode = box.node.querySelector('h4')
+      let textObj = {
+        node: textNode,
+        state: {
+          isVisible: 0
+        }
+      }
+
+      box.children = [
+        imgObj,
+        textObj
+      ]
+
+      return box
+    })
+
+    // OPTIMIZE: test references
+
+    tmp = Array.from(currentScene.querySelectorAll('.content > hr'))
+    this.third.spacers = tmp.map(node => ({
+      node: node,
+      state: {
+        isVisible: 0
+      }
+    }))
+
+    // this.checkReferences(this.third, 'third')
+  }
+
+  toggleElementOpacity (el) {
+    if (el.state.isVisible) {
+      el.node.style.opacity = '0'
+      el.state.isVisible = 0
+    } else {
+      el.node.style.opacity = '1'
+      el.state.isVisible = 1
+    }
   }
 
   showThird () {
-    this.scenes[2].style.display = 'flex'
+    let { scenes, third } = this
+    let currentScene = scenes[2]
+    currentScene.style.display = 'flex'
+    setTimeout(() => {
+      this.toggleElementOpacity(this.third.title)
+    }, 500)
+
+    // If on mobile trigger first box & start observing scrolling
+    if (this.clientW < 500) {
+      let [ img, text ] = third.boxes[0].children
+      setTimeout(() => {
+        // Toggle Image
+        this.toggleElementOpacity(img)
+      }, 500)
+
+      setTimeout(() => {
+        // Toggle Text
+        this.toggleElementOpacity(text)
+      }, 1500)
+
+      setTimeout(() => {
+        this.toggleElementOpacity(third.spacers[0])
+      }, 2500)
+
+      this.observeThird()
+    } else {
+      // If on desktop trigger each box evry 1.5s
+      let delta = 0
+      third.boxes.forEach(box => {
+        let [ img, text ] = box.children
+        setTimeout(() => {
+          // Toggle Image
+          this.toggleElementOpacity(img)
+        }, delta + 500)
+
+        setTimeout(() => {
+          // Toggle Text
+          this.toggleElementOpacity(text)
+        }, delta + 1000)
+
+        delta = delta + 1500
+      })
+
+      // Then trigger vertical spacers (border-right)
+      setTimeout(() => {
+        // Toggle Spacer
+        third.boxes[0].node.style.borderRight = '1px solid #fff'
+      }, 2000)
+
+      setTimeout(() => {
+        // Toggle Spacer
+        third.boxes[1].node.style.borderRight = '1px solid #fff'
+      }, 3500)
+
+      // Then toggle scrollHelper after 5 additional seconds
+      setTimeout(() => {
+        this.toggleScrollHelper()
+        this.scrollHelper.addEventListener('click', this.hideThird)
+        this.prepareFourth()
+      }, 8500)
+    }
   }
 
   hideThird () {
+    let { title, boxes } = this.third
 
+    // remove evt listener from scrollHelper
+    this.scrollHelper.removeEventListener('click', this.hideThird)
+    // stop observer (if running)
+    if (this.thirdObserver) {
+      boxes.forEach(box => this.thirdObserver.unobserve(box.children[0].node))
+    }
+    // fadeout title
+    this.toggleElementOpacity(title)
+    // fadeout content
+    boxes.forEach(box => {
+      this.toggleElementOpacity(box)
+      this.toggleElementOpacity(box.children[0])
+      this.toggleElementOpacity(box.children[1])
+    })
+
+    // display none slide
+    setTimeout(() => {
+      this.scenes[2].style.display = 'none'
+    }, 1100)
+    // call next
+    setTimeout(this.next, 1200)
   }
 
   prepareFourth () {
+    let currentScene = this.scenes[3]
+    this.fourth = {
+      title: {
+        node: currentScene.querySelector('h3'),
+        state: {
+          isVisible: 0
+        }
+      },
+      boxes: []
+    }
 
+    // Select container blocks
+    let tmp = Array.from(currentScene.querySelectorAll('.content > div'))
+    this.fourth.boxes = tmp.map(node => ({
+      node: node,
+      state: {
+        isVisible: parseInt(window.getComputedStyle(node).getPropertyValue('opacity'))
+      }
+    }))
+
+    // OPTIMIZE: test references
+
+    // Select img and text inside a box
+    this.fourth.boxes = this.fourth.boxes.map(box => {
+      let labelNode = box.node.querySelector('p')
+      let labelObj = {
+        node: labelNode,
+        state: {
+          isVisible: 0
+        }
+      }
+      // OPTIMIZE: extrapolate utility
+
+      let textNode = box.node.querySelector('.text')
+      let textObj = {
+        node: textNode,
+        state: {
+          isVisible: 0
+        }
+      }
+
+      let node = box.node.querySelector('img')
+      // IDEA: try parseInt(window.getComputedStyle(node).getPropertyValue('opacity'))
+      let imgObj = {
+        node: node,
+        state: {
+          isVisible: 0
+        }
+      }
+
+      box.children = [
+        labelObj,
+        textObj,
+        imgObj
+      ]
+
+      return box
+    })
+
+    // OPTIMIZE: test references
+
+    tmp = Array.from(currentScene.querySelectorAll('.content > hr'))
+    this.fourth.spacers = tmp.map(node => ({
+      node: node,
+      state: {
+        isVisible: 0
+      }
+    }))
+  }
+
+  observeFourth () {
+    let options = {
+      threshold: [0.1]
+    }
+    this.fourth.observing = false
+    this.fourthObserver = new IntersectionObserver(this.observeFourthHandler, options)
+
+    let { boxes } = this.fourth
+    boxes.forEach(box => this.fourthObserver.observe(box.node))
+  }
+
+  observeFourthHandler (entries) {
+    if (!this.fourth.observing) {
+      this.fourth.observing = true
+      return
+    }
+    entries.forEach(entry => {
+      let { target } = entry
+      let { boxes } = this.fourth
+      let idx = target.dataset.idx
+      this.toggleElementOpacity(boxes[idx].children[0])
+      setTimeout(() => {
+        this.toggleElementOpacity(boxes[idx].children[1])
+      }, 1000)
+      setTimeout(() => {
+        this.toggleElementOpacity(boxes[idx].children[2])
+      }, 2000)
+
+      if (idx < 1) {
+
+      } else {
+        setTimeout(() => {
+          this.toggleScrollHelper()
+          this.scrollHelper.addEventListener('click', this.hideFourth)
+          console.log('should prepare part 2')
+        }, 2000)
+      }
+    })
   }
 
   showFourth () {
-    this.scenes[3].style.display = 'flex'
+    let { scenes, fourth } = this
+    let currentScene = scenes[3]
+    currentScene.style.display = 'flex'
+    setTimeout(() => {
+      this.toggleElementOpacity(this.fourth.title)
+    }, 500)
+
+    // If on mobile trigger first box & start observing scrolling
+    if (this.clientW < 500) {
+      let [ label, text, img ] = fourth.boxes[0].children
+      setTimeout(() => {
+        // Toggle Label
+        this.toggleElementOpacity(label)
+      }, 500)
+
+      setTimeout(() => {
+        // Toggle Text
+        this.toggleElementOpacity(text)
+      }, 1500)
+
+      setTimeout(() => {
+        // Toggle Image
+        this.toggleElementOpacity(img)
+      }, 2500)
+
+      setTimeout(() => {
+        this.toggleElementOpacity(fourth.spacers[0])
+      }, 3500)
+
+      this.observeFourth()
+    } else {
+      // If on desktop trigger each box evry 1.5s
+      let delta = 0
+      console.log(fourth.boxes)
+      fourth.boxes.forEach(box => {
+        let [ label, text, img ] = box.children
+        setTimeout(() => {
+          // Toggle Label
+          this.toggleElementOpacity(label)
+        }, delta + 500)
+
+        setTimeout(() => {
+          // Toggle Text
+          this.toggleElementOpacity(text)
+        }, delta + 1000)
+
+        setTimeout(() => {
+          // Toggle Image
+          this.toggleElementOpacity(img)
+        }, delta + 1500)
+
+        delta = delta + 1500
+      })
+
+      // Then trigger vertical spacers (border-right)
+      setTimeout(() => {
+        // Toggle Spacer
+        fourth.boxes[0].node.style.borderRight = '1px solid #fff'
+      }, 1500)
+
+      // Then toggle scrollHelper after 5 additional seconds
+      setTimeout(() => {
+        this.toggleScrollHelper()
+        this.scrollHelper.addEventListener('click', this.hideFourth)
+        console.log('should prepare part 2')
+      }, 8500)
+    }
   }
 
   hideFourth () {
+    let { title, boxes } = this.fourth
 
+    // remove evt listener from scrollHelper
+    this.scrollHelper.removeEventListener('click', this.hidefourth)
+    // stop observer (if running)
+    if (this.fourthObserver) {
+      boxes.forEach(box => this.fourthObserver.unobserve(box.children[0].node))
+    }
+    // fadeout title
+    this.toggleElementOpacity(title)
+    // fadeout content
+    boxes.forEach(box => {
+      this.toggleElementOpacity(box)
+      this.toggleElementOpacity(box.children[0])
+      this.toggleElementOpacity(box.children[1])
+      this.toggleElementOpacity(box.children[2])
+    })
+
+    // display none slide
+    setTimeout(() => {
+      this.scenes[3].style.display = 'none'
+    }, 1100)
+    // call next
+    // setTimeout(this.next, 1200)
+    console.log('Go to Part 2')
   }
 
   showCurrent () {
