@@ -3,6 +3,7 @@ import 'Intersection-observer'
 import Intro from './Intro_class'
 import One from './One_Class'
 import Two from './Two_Class'
+import Three from './Three_Class'
 
 // INTRO
 let introTexts = [
@@ -50,8 +51,20 @@ function twoInit () {
   })
 }
 
+function threeInit () {
+  let partThree = document.querySelector('.part-three')
+  let scrollHelper = document.querySelector('.scrollHelper img')
+
+  window.three = new Three({
+    root: partThree,
+    scrollHelper: scrollHelper,
+    scrollGrain: false
+  })
+}
+
 document.onload = (function () {
-  introInit()
+  // introInit()
   // oneInit()
   // twoInit()
+  threeInit()
 })()
