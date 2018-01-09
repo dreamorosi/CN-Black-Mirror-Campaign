@@ -59,3 +59,6 @@ typings/
 
 # Sass
 sass-cache
+
+# Build
+build
