@@ -25,7 +25,8 @@ function introInit () {
     root: introElement,
     scenes: introTexts,
     scrollHelper: scrollHelper,
-    scrollGrain: true
+    scrollGrain: true,
+    shutDownCall: oneInit
   })
 }
 
@@ -60,6 +61,16 @@ function threeInit () {
     scrollHelper: scrollHelper,
     scrollGrain: false
   })
+}
+
+function viewport () {
+  var e = window
+  var a = 'inner'
+  if (!('innerWidth' in window)) {
+    a = 'client'
+    e = document.documentElement || document.body
+  }
+  return { width: e[a + 'Width'], height: e[a + 'Height'] }
 }
 
 document.onload = (function () {

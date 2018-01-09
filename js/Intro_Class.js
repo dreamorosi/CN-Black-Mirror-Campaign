@@ -3,17 +3,21 @@ import TextScramble from './TextScramble'
 class Intro {
   constructor (settings) {
     if (!settings.root) {
-      console.error('No root element passed.')
-      return
+      throw Error(`No root element passed.`)
     }
     if (!settings.scenes || !settings.scenes.length || !Array.isArray(settings.scenes)) {
-      console.error('No scenes array passed.')
-      return
+      throw Error(`No scenes array passed.`)
     }
+    if (!settings.shutDownCall || typeof settings.shutDownCall !== 'function') {
+      throw Error(`No shutdown callback passed passed.`)
+    }
+
     this.root = settings.root
     this.isTouchDevice = 'ontouchstart' in document.documentElement
 
-    this.currentScene = 0
+    this.shutdownCallBack = settings.shutDownCall
+
+    this.currentScene = 6
     this.isLoaderVisible = 0
     // An animation is running, discard this scroll evt ? 1 : 0
     this.isTransitioning = 1
@@ -30,19 +34,16 @@ class Intro {
     this.autoadvance = null
 
     if (!this.paragraph) {
-      console.error('No paragraph element found.')
-      return
+      throw Error(`No paragraph element found.`)
     }
 
     this.fx = new TextScramble(this.paragraph)
 
     if (!this.loader) {
-      console.error('No loader element found.')
-      return
+      throw Error(`No loader element found.`)
     }
     if (!this.scrollHelper) {
-      console.error('No scrollHelper element passed.')
-      return
+      throw Error(`No scrollHelper element passed.`)
     }
 
     this.showCurrent = this.showCurrent.bind(this)
@@ -54,6 +55,9 @@ class Intro {
     this.toggleScrollHelper = this.toggleScrollHelper.bind(this)
     this.showScrollHelper = this.showScrollHelper.bind(this)
     this.hideScrollHelper = this.hideScrollHelper.bind(this)
+    this.handleTouchStart = this.handleTouchStart.bind(this)
+    this.handleTouchMove = this.handleTouchMove.bind(this)
+    this.shutdown = this.shutdown.bind(this)
 
     if (settings.scrollGrain) {
       this.scrollStatus = {
@@ -63,28 +67,35 @@ class Intro {
       if (this.isTouchDevice) {
         // Track touch strokes on mobile
         this.scrollStatus.tartScrollPos = 0
-        window.addEventListener('touchstart', (evt) => {
-          this.scrollStatus.startScrollPos = evt.touches[0].clientY
-
-          // Advance when a single tap is made
-          this.isTouchingId = setTimeout(() => this.next(), 100)
-        }, false)
-        window.addEventListener('touchmove', () => {
-          window.clearTimeout(this.isTouching)
-          this.scrollWatcher()
-        }, false)
+        window.addEventListener('touchstart', this.handleTouchStart, false)
+        window.addEventListener('touchmove', this.handleTouchMove, false)
       } else {
         // Track wheel scrolling on desktops
         window.addEventListener('wheel', this.scrollWatcher)
       }
     }
-
     this.scenes = settings.scenes
     this.toggleLoader()
     let that = this
     setTimeout(function () {
       that.showCurrent()
     }, 500)
+  }
+
+  handleTouchStart (evt) {
+    this.scrollStatus.startScrollPos = evt.touches[0].clientY
+
+    // Advance when a single tap is made
+    this.isTouchingId = setTimeout(() => {
+      if (!this.isTransitioning) {
+        this.next()
+      }
+    }, 100)
+  }
+
+  handleTouchMove () {
+    window.clearTimeout(this.isTouching)
+    this.scrollWatcher()
   }
 
   scrollGrain (evt) {
@@ -174,8 +185,9 @@ class Intro {
     if (this.currentScene === this.scenes.length - 1) {
       this.toggleLoader()
       this.loader.src = 'http://placehold.it/100x100'
-      this.loader.addEventListener('load', () => { this.toggleLoader() })
+      this.loader.addEventListener('load', this.toggleLoader)
       setTimeout(this.showScrollHelper, 3000)
+      this.scrollHelper.addEventListener('click', this.shutdown)
       console.log('Should preload next part')
     }
 
@@ -204,6 +216,20 @@ class Intro {
       this.showCurrent()
       console.log(this.scenes[this.currentScene], 'NEXT')
     }
+  }
+
+  shutdown () {
+    window.clearTimeout(this.firstHelp)
+    window.clearTimeout(this.autoadvance)
+    window.removeEventListener('touchstart', this.handleTouchStart, false)
+    window.removeEventListener('touchmove', this.handleTouchMove, false)
+    window.removeEventListener('wheel', this.scrollWatcher)
+    this.scrollHelper.removeEventListener('click', this.shutdown)
+    this.loader.removeEventListener('load', this.toggleLoader)
+
+    this.root.style.display = 'none'
+
+    this.shutdownCallBack()
   }
 }
 
