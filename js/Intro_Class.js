@@ -1,11 +1,11 @@
-// function viewport() {
-//   var e = window, a = 'inner'
-//   if (!('innerWidth' in window )) {
-//     a = 'client'
-//     e = document.documentElement || document.body
-//   }
-//   return { width : e[ a+'Width' ] , height : e[ a+'Height' ] }
-// }
+function viewport() {
+  var e = window, a = 'inner'
+  if (!('innerWidth' in window )) {
+    a = 'client'
+    e = document.documentElement || document.body
+  }
+  return { width : e[ a+'Width' ] , height : e[ a+'Height' ] }
+}
 
 class Intro {
   constructor (settings) {
@@ -18,7 +18,7 @@ class Intro {
       return
     }
     this.root = settings.root
-    // this.clientW = viewport().width
+    this.clientW = viewport().width
     // this.clientH = viewport().height
 
     this.currentScene = 0
@@ -27,7 +27,7 @@ class Intro {
     // An animation is running, discard this scroll evt ? 1 : 0
     this.isTransitioning = 1
     // The main thread is busy, discard this scroll evt ? 1 : 0
-    this.thtrottling = 0
+    this.isThreadBusy = 0
     this.scrollId = null
     this.scrollDelta = []
     this.paragraph = this.root.querySelector('p')
@@ -51,7 +51,7 @@ class Intro {
     this.showCurrent = this.showCurrent.bind(this)
     this.scrollGrain = this.scrollGrain.bind(this)
     this.scrollWatcher = this.scrollWatcher.bind(this)
-    this.scrollCoach = this.scrollCoach.bind(this)
+    // this.scrollCoach = this.scrollCoach.bind(this)
     this.transitionFinished = this.transitionFinished.bind(this)
     this.toggleLoader = this.toggleLoader.bind(this)
     this.toggleScrollHelper = this.toggleScrollHelper.bind(this)
@@ -59,8 +59,21 @@ class Intro {
     this.hideScrollHelper = this.hideScrollHelper.bind(this)
 
     if (settings.scrollGrain) {
-      window.addEventListener('scroll', this.scrollWatcher)
-      // this.paragraph.addEventListener('scroll', this.scrollWatcher)
+      this.scrollStatus = {
+        wheeling: false,
+        isBusy: false
+      }
+      if (this.clientW > 500) {
+        // Track wheel scrolling on desktops
+        window.addEventListener('wheel', this.scrollWatcher)
+      } else {
+        // Track touch strokes on mobile
+        this.scrollStatus.tartScrollPos = 0
+        window.addEventListener('touchstart', (evt) => {
+          this.scrollStatus.startScrollPos = evt.touches[0].clientY
+        }, false)
+        window.addEventListener('touchmove', this.scrollWatcher, false)
+      }
     }
 
     this.scenes = settings.scenes
@@ -71,41 +84,39 @@ class Intro {
     }, 500)
   }
 
-  scrollGrain () {
-    if (this.scrollId === null) {
-      this.scrollId = setTimeout(this.scrollCoach, 300)
-    } else {
-      clearTimeout(this.scrollId)
-      this.scrollId = setTimeout(this.scrollCoach, 300)
-    }
+  scrollGrain (evt) {
+    clearTimeout(this.scrollId)
+    this.scrollId = setTimeout(() => {
+      this.scrollStatus.wheeling = false
+      this.scrollStatus.isBusy = false
 
-    this.scrollDelta.push(window.scrollY)
-    // this.scrollDelta.push(this.paragraph.scrollTop)
-
-    this.thtrottling = 0
+      let dir = 0
+      if (this.clientW > 500) {
+        dir = (evt.detail < 0 || evt.wheelDelta > 0) ? 1 : -1
+      } else {
+        let { clientY } = evt.touches[0]
+        let yDown = this.scrollStatus.startScrollPos
+        dir = clientY - yDown
+      }
+      if (dir > 0) {
+        console.log('Up!')
+        this.prev()
+      } else {
+        console.log('Down!')
+        this.next()
+      }
+    }, 1000)
+    this.isThreadBusy = false
   }
 
-  scrollWatcher () {
-    if (!this.thtrottling && !this.isTransitioning) {
+  scrollWatcher (e) {
+    this.scrollStatus.wheeling = true
+    if (!this.isThreadBusy && !this.isTransitioning && !this.scrollStatus.isBusy) {
       // Exec only if main thread is not busy
-      window.requestAnimationFrame(this.scrollGrain)
+      window.requestAnimationFrame(() => this.scrollGrain(e))
 
-      this.thtrottling = 1
-    }
-  }
-
-  scrollCoach () {
-    let sum = this.scrollDelta.reduce((a, b) => a + b)
-    let avg = sum / this.scrollDelta.length
-    this.scrollDelta = []
-    if (avg > 0.5) {
-      console.log('Up!')
-      this.next()
-    //   this.clientW > 500 ? this.prev() : this.next()
-    } else {
-      console.log('Down!')
-      this.prev()
-    //   this.clientW > 500 ? this.next() : this.prev()
+      this.isThreadBusy = 1
+      this.scrollStatus.isBusy = true
     }
   }
 
