@@ -8,12 +8,12 @@ import Three from './Three_Class'
 // INTRO
 let introTexts = [
   'Piensa en tu día a día.',
-  'En las 9 horas de trabajo<br /> y tus 8 durmiendo.',
+  'En las 9 horas de trabajo\n y tus 8 durmiendo.',
   'Piensa en tu tiempo libre.',
-  'Piensa en cuánto tiempo<br /> le dedicas al móvil.',
+  'Piensa en cuánto tiempo\n le dedicas al móvil.',
   'Haz el cálculo mental.',
-  'Mira los mejores años de<br /> tu vida esfumándose.',
-  'Asómate al espejo<br /> y obsérvate.',
+  'Mira los mejores años de\n tu vida esfumándose.',
+  'Asómate al espejo\n y obsérvate.',
   '¿Cuánto vale tu vida?'
 ]
 
@@ -63,8 +63,8 @@ function threeInit () {
 }
 
 document.onload = (function () {
-  // introInit()
+  introInit()
   // oneInit()
   // twoInit()
-  threeInit()
+  // threeInit()
 })()

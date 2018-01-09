@@ -1,11 +1,4 @@
-function viewport() {
-  var e = window, a = 'inner'
-  if (!('innerWidth' in window )) {
-    a = 'client'
-    e = document.documentElement || document.body
-  }
-  return { width : e[ a+'Width' ] , height : e[ a+'Height' ] }
-}
+import TextScramble from './TextScramble'
 
 class Intro {
   constructor (settings) {
@@ -18,27 +11,31 @@ class Intro {
       return
     }
     this.root = settings.root
-    this.clientW = viewport().width
-    // this.clientH = viewport().height
+    this.isTouchDevice = 'ontouchstart' in document.documentElement
 
     this.currentScene = 0
     this.isLoaderVisible = 0
-    this.isHelperVisible = 0
     // An animation is running, discard this scroll evt ? 1 : 0
     this.isTransitioning = 1
     // The main thread is busy, discard this scroll evt ? 1 : 0
-    this.isThreadBusy = 0
+    this.isThreadBusy = false
     this.scrollId = null
     this.scrollDelta = []
     this.paragraph = this.root.querySelector('p')
     this.loader = this.root.querySelector('img')
+
     this.scrollHelper = settings.scrollHelper
-    this.scrollHelperLongWait = null
+    this.isHelperVisible = 0
+
+    this.autoadvance = null
 
     if (!this.paragraph) {
       console.error('No paragraph element found.')
       return
     }
+
+    this.fx = new TextScramble(this.paragraph)
+
     if (!this.loader) {
       console.error('No loader element found.')
       return
@@ -49,9 +46,9 @@ class Intro {
     }
 
     this.showCurrent = this.showCurrent.bind(this)
+    this.next = this.next.bind(this)
     this.scrollGrain = this.scrollGrain.bind(this)
     this.scrollWatcher = this.scrollWatcher.bind(this)
-    // this.scrollCoach = this.scrollCoach.bind(this)
     this.transitionFinished = this.transitionFinished.bind(this)
     this.toggleLoader = this.toggleLoader.bind(this)
     this.toggleScrollHelper = this.toggleScrollHelper.bind(this)
@@ -63,16 +60,22 @@ class Intro {
         wheeling: false,
         isBusy: false
       }
-      if (this.clientW > 500) {
-        // Track wheel scrolling on desktops
-        window.addEventListener('wheel', this.scrollWatcher)
-      } else {
+      if (this.isTouchDevice) {
         // Track touch strokes on mobile
         this.scrollStatus.tartScrollPos = 0
         window.addEventListener('touchstart', (evt) => {
           this.scrollStatus.startScrollPos = evt.touches[0].clientY
+
+          // Advance when a single tap is made
+          this.isTouchingId = setTimeout(() => this.next(), 100)
         }, false)
-        window.addEventListener('touchmove', this.scrollWatcher, false)
+        window.addEventListener('touchmove', () => {
+          window.clearTimeout(this.isTouching)
+          this.scrollWatcher()
+        }, false)
+      } else {
+        // Track wheel scrolling on desktops
+        window.addEventListener('wheel', this.scrollWatcher)
       }
     }
 
@@ -85,18 +88,18 @@ class Intro {
   }
 
   scrollGrain (evt) {
-    clearTimeout(this.scrollId)
+    window.clearTimeout(this.scrollId)
     this.scrollId = setTimeout(() => {
       this.scrollStatus.wheeling = false
       this.scrollStatus.isBusy = false
 
       let dir = 0
-      if (this.clientW > 500) {
-        dir = (evt.detail < 0 || evt.wheelDelta > 0) ? 1 : -1
-      } else {
+      if (this.isTouchDevice) {
         let { clientY } = evt.touches[0]
         let yDown = this.scrollStatus.startScrollPos
         dir = clientY - yDown
+      } else {
+        dir = (evt.detail < 0 || evt.wheelDelta > 0) ? 1 : -1
       }
       if (dir > 0) {
         console.log('Up!')
@@ -115,7 +118,7 @@ class Intro {
       // Exec only if main thread is not busy
       window.requestAnimationFrame(() => this.scrollGrain(e))
 
-      this.isThreadBusy = 1
+      this.isThreadBusy = true
       this.scrollStatus.isBusy = true
     }
   }
@@ -130,14 +133,11 @@ class Intro {
     }
   }
 
-  toggleScrollHelper (expires = true) {
+  toggleScrollHelper () {
     if (this.isHelperVisible) {
       this.hideScrollHelper()
     } else {
       this.showScrollHelper()
-      if (expires) {
-        setTimeout(this.hideScrollHelper, 5000)
-      }
     }
   }
 
@@ -153,41 +153,37 @@ class Intro {
 
   transitionStarted () {
     this.isTransitioning = 1
-    clearTimeout(this.scrollHelperLongWait)
+
+    window.clearTimeout(this.firstHelp)
+    window.clearTimeout(this.autoadvance)
   }
 
   transitionFinished () {
     this.isTransitioning = 0
   }
 
+  swapText () {
+    this.fx.setText(this.scenes[this.currentScene])
+    setTimeout(this.transitionFinished, 300)
+    // After 4 seconds we move to the next
+    this.autoadvance = setTimeout(this.next, 5000)
+  }
+
   showCurrent () {
-    this.paragraph.style.opacity = '0'
-    let that = this
+    // Final scene
     if (this.currentScene === this.scenes.length - 1) {
       this.toggleLoader()
       this.loader.src = 'http://placehold.it/100x100'
-      this.loader.addEventListener('load', function () {
-        that.toggleLoader()
-      })
+      this.loader.addEventListener('load', () => { this.toggleLoader() })
       setTimeout(this.showScrollHelper, 3000)
-    }
-    setTimeout(function () {
-      that.paragraph.innerHTML = `> ${that.scenes[that.currentScene]} /`
-      that.paragraph.style.opacity = '1'
-
-      document.body.scrollTop = document.documentElement.scrollTop = 1
-      setTimeout(that.transitionFinished, 500)
-      setTimeout(that.toggleScrollHelper, 1500)
-      this.scrollHelperLongWait = setTimeout(that.toggleScrollHelper, 16500)
-    }, 1000)
-  }
-
-  setScenes (array) {
-    if (!Array.isArray(array) || array.length === 0) {
-      console.error('No array passed')
+      console.log('Should preload next part')
     }
 
-    this.scenes = array
+    // Trigger text animation
+    this.swapText()
+
+    // After 1.5 seconds we show the arrow one time
+    this.firstHelp = setTimeout(this.toggleScrollHelper, 1500)
   }
 
   prev () {
