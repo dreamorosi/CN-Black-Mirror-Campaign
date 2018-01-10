@@ -37,9 +37,17 @@ function oneInit () {
   window.one = new One({
     root: partOne,
     scrollHelper: scrollHelper,
-    scrollGrain: false
+    scrollGrain: false,
+    shutDownCall: twoInit
   })
 }
+
+const twoTexts = [
+  '&gt; Tu vida en la nube es una ficción acelerada.<br class="bg" /> Una broma rentabilizada por visionarios<br class="bg" /> de Silicon Valley. /',
+  '&gt; Hueles a batería caliente.<br class="bg" /> A manojo de datos. /',
+  '&gt; ¿Te aterra desconectarte? hazme caso:<br class="bg" /> junta tus likes, súmalos, apunta el número<br class="bg" /> y guárdalo en una caja fuerte. /',
+  '&gt; Dentro de 10 años será tu único recuerdo agradable.<br class="bg" /> Todo lo demás se habrá desvanecido. /'
+]
 
 function twoInit () {
   let partTwo = document.querySelector('.part-two')
@@ -48,7 +56,9 @@ function twoInit () {
   window.two = new Two({
     root: partTwo,
     scrollHelper: scrollHelper,
-    scrollGrain: false
+    scrollGrain: false,
+    texts: twoTexts,
+    shutDownCall: threeInit
   })
 }
 
@@ -75,6 +85,7 @@ function viewport () {
 
 document.onload = (function () {
   introInit()
+  // document.querySelector('.intro').style.display = 'none'
   // oneInit()
   // twoInit()
   // threeInit()

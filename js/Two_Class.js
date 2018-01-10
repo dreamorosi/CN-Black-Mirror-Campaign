@@ -1,5 +1,7 @@
 /* global IntersectionObserver */
 
+import TextScramble from './TextScramble'
+
 function viewport () {
   var e = window
   var a = 'inner'
@@ -13,18 +15,21 @@ function viewport () {
 class Two {
   constructor (settings) {
     if (!settings.root) {
-      console.error('No root element passed.')
-      return
+      throw Error(`No root element passed.`)
     }
     this.root = settings.root
     this.scenes = Array.from(this.root.querySelectorAll('.slide'))
     if (!this.scenes.length) {
-      console.error('No scenes found.')
-      return
+      throw Error(`No scenes found.`)
+    }
+
+    if (!settings.shutDownCall || typeof settings.shutDownCall !== 'function') {
+      throw Error(`No shutdown callback passed passed.`)
     }
 
     this.clientW = viewport().width
     this.clientH = viewport().height
+    this.shutdownCallBack = settings.shutDownCall
     this.currentScene = 0
     // An animation is running, discard this scroll evt ? 1 : 0
     this.isTransitioning = 1
@@ -52,9 +57,10 @@ class Two {
     this.toggleElementOpacity = this.toggleElementOpacity.bind(this)
     this.hideFirst = this.hideFirst.bind(this)
     this.showSecond = this.showSecond.bind(this)
-    this.hideSecond = this.hideSecond.bind(this)
+    this.shutdown = this.shutdown.bind(this)
     this.observeFirstHandler = this.observeFirstHandler.bind(this)
-    this.observeSecondHandler = this.observeSecondHandler.bind(this)
+
+    this.texts = settings.texts
 
     this.first = {}
     this.second = {}
@@ -115,6 +121,13 @@ class Two {
       boxes: []
     }
 
+    this.first.imagesC = {
+      node: currentScene.querySelector('.images'),
+      state: {
+        isVisible: 0
+      }
+    }
+
     // Select container blocks
     let tmp = Array.from(currentScene.querySelectorAll('.images > div'))
     this.first.boxes = tmp.map(node => ({
@@ -133,6 +146,7 @@ class Two {
     currentScene.style.display = 'block'
     setTimeout(() => {
       this.toggleElementOpacity(first.title)
+      first.imagesC.node.style.display = 'flex'
     }, 500)
 
     // If on mobile trigger first box & start observing scrolling
@@ -156,12 +170,12 @@ class Two {
         setTimeout(() => {
           // Toggle show state on second Number
           first.boxes[1].node.classList.add('show')
-        }, 4000)
+        }, 3000)
       }
 
       this.observeFirst()
     } else {
-      // If on desktop trigger each box evry 1.5s
+      // If on desktop trigger each box evry 250ms
       let delta = 0
       first.boxes.forEach(box => {
         setTimeout(() => {
@@ -169,23 +183,23 @@ class Two {
           this.toggleElementOpacity(box)
         }, delta + 500)
 
-        delta = delta + 1000
+        delta = delta + 250
       })
-
-      // Then toggle scrollHelper after 5 additional seconds
-      setTimeout(() => {
-        this.toggleScrollHelper()
-        this.scrollHelper.addEventListener('click', this.hideFirst)
-        this.prepareSecond()
-      }, 7500)
     }
+
+    setTimeout(() => {
+      this.toggleScrollHelper()
+      this.scrollHelper.parentNode.addEventListener('click', this.hideFirst)
+      this.scrollHelper.parentNode.style.background = 'rgba(0,0,0,.5)'
+      this.prepareSecond()
+    }, 500)
   }
 
   hideFirst () {
     let { title, boxes } = this.first
 
     // remove evt listener from scrollHelper
-    this.scrollHelper.removeEventListener('click', this.hideFirst)
+    this.scrollHelper.parentNode.removeEventListener('click', this.hideFirst)
     // stop observer (if running)
     if (this.firstObserver) {
       boxes.forEach(box => this.firstObserver.unobserve(box))
@@ -214,11 +228,11 @@ class Two {
 
     firstObserver = new IntersectionObserver(this.observeFirstHandler, options)
     boxes.forEach(box => firstObserver.observe(box.node))
+    setTimeout(() => { this.first.observing = true }, 1500)
   }
 
   observeFirstHandler (entries) {
     if (!this.first.observing) {
-      this.first.observing = true
       return
     }
     entries.forEach(entry => {
@@ -229,16 +243,6 @@ class Two {
       setTimeout(() => {
         boxes[idx].node.classList.add('show')
       }, 1000)
-
-      if (parseInt(idx) < 7) {
-
-      } else {
-        setTimeout(() => {
-          this.toggleScrollHelper()
-          this.scrollHelper.addEventListener('click', this.hideFirst)
-          this.prepareSecond()
-        }, 2000)
-      }
     })
   }
 
@@ -250,13 +254,12 @@ class Two {
 
     // Select container blocks
     let tmp = Array.from(currentScene.querySelectorAll('p'))
-    this.second.boxes = tmp.map(node => ({
+    this.second.paragraphs = tmp.map(node => ({
       node: node,
       state: {
         isVisible: 0
       }
     }))
-
     // OPTIMIZE: test references
   }
 
@@ -265,101 +268,43 @@ class Two {
     let currentScene = scenes[1]
     currentScene.style.display = 'flex'
 
-    // If on mobile trigger first box & start observing scrolling
-    if (this.clientW < 500) {
+    let delta = 0
+    second.paragraphs.forEach(box => {
       setTimeout(() => {
-        // Toggle first Number
-        this.toggleElementOpacity(second.boxes[0])
-      }, 500)
+        // Toggle Sentence
+        let fx = new TextScramble(box.node)
+        fx.setText(this.texts[box.node.dataset.idx])
+      }, delta + 500)
 
-      setTimeout(() => {
-        // Toggle first Number
-        this.toggleElementOpacity(second.boxes[1])
-      }, 1500)
+      delta = delta + 1500
+    })
 
-      setTimeout(() => {
-        // Toggle first Number
-        this.toggleElementOpacity(second.boxes[2])
-      }, 3000)
-
-      this.observeSecond()
-    } else {
-      // If on desktop trigger each box evry 1.5s
-      let delta = 0
-      second.boxes.forEach(box => {
-        setTimeout(() => {
-          // Toggle Sentence
-          this.toggleElementOpacity(box)
-        }, delta + 500)
-
-        delta = delta + 1000
-      })
-
-      // Then toggle scrollHelper after 5 additional seconds
-      setTimeout(() => {
-        this.toggleScrollHelper()
-        this.scrollHelper.addEventListener('click', this.hideSecond)
-        console.log('should prepare part 3')
-      }, 4500)
-    }
+    // Activate scrollHelper after 2 additional seconds
+    setTimeout(() => {
+      this.scrollHelper.parentNode.addEventListener('click', this.shutdown)
+      console.log('should prepare part 3')
+    }, 2000)
   }
 
-  hideSecond () {
+  shutdown () {
     let { boxes } = this.second
 
     // remove evt listener from scrollHelper
-    this.scrollHelper.removeEventListener('click', this.hideSecond)
-    // stop observer (if running)
-    if (this.secondObserver) {
-      boxes.forEach(box => this.secondObserver.unobserve(box))
-    }
+    this.scrollHelper.parentNode.removeEventListener('click', this.shutdown)
     // fadeout content
     boxes.forEach(box => {
       this.toggleElementOpacity(box)
     })
 
+    this.scrollHelper.parentNode.style.background = 'transparent'
+    this.toggleScrollHelper()
     // display none slide
     setTimeout(() => {
       this.scenes[1].style.display = 'none'
-    }, 1100)
+    }, 500)
     // call next
+    this.shutdownCallBack()
     console.log('should go to part 3')
-  }
-
-  observeSecond () {
-    let options = {
-      threshold: [0.1]
-    }
-
-    let { second, secondObserver } = this
-
-    secondObserver = new IntersectionObserver(this.observeSecondHandler, options)
-    second.observing = false
-
-    second.boxes.forEach(box => secondObserver.observe(box.node))
-  }
-
-  observeSecondHandler (entries) {
-    if (!this.second.observing) {
-      this.second.observing = true
-      return
-    }
-    entries.forEach(entry => {
-      let { target } = entry
-      let { boxes } = this.second
-      let idx = target.dataset.idx
-      this.toggleElementOpacity(boxes[idx])
-
-      if (parseInt(idx) < 3) {
-
-      } else {
-        setTimeout(() => {
-          this.toggleScrollHelper()
-          this.scrollHelper.addEventListener('click', this.hideSecond)
-          console.log('should prepare part 3')
-        }, 2000)
-      }
-    })
   }
 
   showCurrent () {

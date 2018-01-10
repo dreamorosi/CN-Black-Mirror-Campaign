@@ -25,6 +25,7 @@ header {
   width: 100vw;
   height: 75px;
   position: fixed;
+  z-index: 9999;
   bottom: 0;
   left: 0;
   display: flex;
@@ -32,7 +33,7 @@ header {
   align-items: center;
   cursor: pointer;
 
-  & img {
+  img {
     width: 26px;
     -webkit-animation: pulse 2.5s infinite;
     animation: pulse 2.5s infinite;
@@ -40,12 +41,26 @@ header {
     transition: opacity 2000ms ease-in;
     position: absolute;
   }
+
+  p {
+    text-transform: uppercase;
+    color: $white;
+    font-family: 'Montserrat';
+    position: relative;
+    opacity: 0;
+    transition: opacity 1000ms ease-in;
+    top: -20px;
+  }
 }
 
 @keyframes pulse {
   0% {transform: scale(1);}
   50% {transform: scale(1.1);}
   100% {transform: scale(1);}
+}
+
+.scrambling {
+  color: #757575;
 }
 
 .intro {
@@ -146,7 +161,7 @@ header {
         width: 100vw;
         max-width: 100vw;
         padding: 0 0 0 35px;
-        transition: opacity 500ms ease-out;
+        transition: opacity 150ms ease-out;
 
         @media (min-width: 450px) {
           padding: 0;
@@ -161,7 +176,7 @@ header {
           font-size: 1.2em;
           text-transform: uppercase;
           opacity: 0;
-          transition: opacity 1000ms linear;
+          transition: opacity 300ms ease-in;
 
           @media (min-width: 450px) {
             margin: 0 0 25px;
@@ -182,7 +197,7 @@ header {
           margin: 0 0 30px;
           border-radius: 0;
           opacity: 0;
-          transition: opacity 1000ms linear;
+          transition: opacity 300ms ease-in;
 
           &::-webkit-inner-spin-button,
           &::-webkit-outer-spin-button {
@@ -216,10 +231,8 @@ header {
         font-weight: 300;
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-start;
-        padding: 0 0 0 35px;
-        min-height: calc(calc(100vh - 50px) - 75px);
+        align-items: center;
+        min-height: calc(100vh - 75px);
         transition: opacity 1000ms linear;
 
         @media (min-width: 450px) {
@@ -227,15 +240,19 @@ header {
           padding: 0;
           max-height: calc(calc(100vh - 50px) - 75px);
           justify-content: center;
+          align-items: flex-start;
         }
 
         p {
           font-weight: 300;
-          font-size: 1.2em;
+          font-size: 1em;
           text-transform: uppercase;
           margin: 0;
           opacity: 0;
+          text-align: center;
           transition: opacity 1000ms linear;
+          margin: 0 0 15px;
+          text-shadow: 1px 0px 1px $white;
 
           @media (max-width: 450px) {
             &:last-of-type {
@@ -244,6 +261,7 @@ header {
           }
 
           @media (min-width: 450px) {
+            font-size: 1.2em;
             margin: 0 0 25px;
           }
         }
@@ -257,8 +275,10 @@ header {
           opacity: 0;
           transition: opacity 1000ms linear;
           display: flex;
+          flex-direction: column;
 
           @media (min-width: 450px) {
+            flex-direction: row;
             width: 95%;
             text-align: left;
             padding: 0 0 0 20px;
@@ -281,17 +301,23 @@ header {
           }
 
           h4 {
-            display: none;
             font-weight: 300;
             opacity: 0;
-            font-size: 1rem;
+            font-size: 1.5rem;
             transition: opacity 1000ms linear;
             flex-grow: 1;
-            text-align: right;
+            text-align: center;
+
+            & > br {
+              display: none;
+
+              &.mobile {
+                display: block;
+              }
+            }
 
             @media (min-width: 450px) {
-              display: block;
-              display: block;
+              text-align: right;
               font-size: 25px;
               line-height: 25px;
               padding: 20px 20px 0 0;
@@ -300,17 +326,6 @@ header {
                 display: block;
               }
             }
-          }
-        }
-
-        & > h4 {
-          display: block;
-          font-weight: 400;
-          opacity: 0;
-          transition: opacity 1000ms linear;
-
-          @media (min-width: 450px) {
-            display: none;
           }
         }
       }
@@ -349,7 +364,8 @@ header {
 
       h3 {
         font-family: 'Montserrat';
-        font-size: 1.2em;
+        font-size: 1.5em;
+        letter-spacing: 5px;
         color: $white;
         text-transform: uppercase;
         margin: 0 35px;
@@ -399,10 +415,11 @@ header {
         }
 
         img {
-          width: 280px;
+          width: 55%;
           margin: 35px auto 0;
           opacity: 0;
-          transition: opacity 1000ms ease-in;
+          object-fit: contain;
+          transition: opacity 500ms ease-in;
         }
 
         h4 {
@@ -412,7 +429,7 @@ header {
           text-align: center;
           margin: 35px 0;
           opacity: 0;
-          transition: opacity 1000ms ease-in;
+          transition: opacity 500ms ease-in;
         }
 
         hr {
@@ -434,7 +451,8 @@ header {
 
       h3 {
         font-family: 'Montserrat';
-        font-size: 1.2em;
+        font-size: 1.5em;
+        letter-spacing: 5px;
         color: $white;
         text-transform: uppercase;
         margin: 0 35px;
@@ -511,14 +529,14 @@ header {
         .text {
           align-self: flex-start;
           opacity: 0;
-          transition: opacity 1000ms linear;
+          transition: opacity 500ms linear;
         }
 
         small {
           color: $white;
           font-family: 'Montserrat';
           font-weight: 300;
-          font-size: 0.95em;
+          font-size: 1em;
           align-self: flex-start;
 
           & strong {
@@ -534,7 +552,7 @@ header {
           color: $white;
           font-family: 'Montserrat';
           font-weight: 200;
-          font-size: 4em;
+          font-size: 4.2em;
           line-height: 1em;
           text-transform: none;
           align-self: flex-start;
@@ -546,8 +564,8 @@ header {
         }
 
         img {
-          width: 85%;
-          margin: 35px 0;
+          width: 325px;
+          margin: 35px auto;
           opacity: 0;
           transition: opacity 1000ms linear;
 
@@ -570,6 +588,23 @@ header {
   }
 }
 
+.vida {
+  width: 100vw;
+  height: calc(100vh - 75px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  h2 {
+    font-size: 2em;
+    font-family: 'Montserrat';
+    text-transform: uppercase;
+    font-weight: 200;
+    color: $white;
+    line-height: 1em;
+  }
+}
+
 .part-two {
   width: 100vw;
   height: 100%;
@@ -582,6 +617,7 @@ header {
 
     &:first-child {
       max-width: 1280px;
+      min-height: calc(100vh - 200px);
       margin: 0 auto;
       display: none;
     }
@@ -592,9 +628,11 @@ header {
       flex-direction: column;
       transition: display 500ms ease-in-out;
       padding: 0 0 75px 0;
+      justify-content: space-between;
 
       @media (min-width: 450px) {
-        padding: 0;
+        padding: 75px;
+        min-height: calc(100vh - 150px);
       }
 
       p {
@@ -602,18 +640,20 @@ header {
         color: $white;
         font-family: 'Montserrat';
         text-transform: uppercase;
-        font-size: 1.2em;
-        margin: 65px 0;
+        font-size: 1em;
+        margin: 15px 0;
         padding: 0 35px;
-        opacity: 0;
-        transition: opacity 1000ms ease-in;
 
         &:first-child {
-          margin-top: 100px;
+          margin-top: 50px;
         }
 
         @media (min-width: 450px) {
           padding: 0;
+          font-size: 1.2em;
+          max-width: 600px;
+          margin-left: auto;
+          margin-right: auto;
         }
 
 
@@ -633,18 +673,28 @@ header {
       text-transform: uppercase;
       font-family: 'Montserrat';
       font-weight: 300;
-      margin: 50px 0 0;
+      margin: 50px 0 0 35px;
       opacity: 0;
-      // transition: opacity 1000ms ease-in;
+      text-align: left;
+      text-shadow: 1px 0px 1px $white;
+      letter-spacing: 5px;
+      transition: opacity 500ms ease-in;
+
+      @media (min-width: 450px) {
+        & br {
+          display: none;
+        }
+      }
     }
 
     .images {
-      display: flex;
+      display: none;
       flex-wrap: wrap;
+      height: 100%;
       padding: 0 0 75px 0;
 
       @media (min-width: 450px) {
-        padding: 0;
+        padding: 50px 0 0 0;
       }
 
       // Single image container
@@ -659,12 +709,14 @@ header {
 
         // Images (numbers) shared style
         img {
-          width: 230px;
+          width: 160px;
           display: block;
-          margin: 30px 70px;
+          margin: 30px 180px;
 
           @media (min-width: 450px) {
             margin: 50px 40px;
+            width: 230px;
+            margin: 30px 70px;
           }
         }
 
@@ -673,11 +725,11 @@ header {
           opacity: 1;
           position: absolute;
           z-index: 3;
-          margin-left: 70px;
-          transition: opacity 500ms ease-out;
+          margin-left: 180px;
+          transition: opacity 350ms ease-out;
 
           @media (min-width: 450px) {
-            margin: 50px 40px;
+            margin: 30px 70px;
           }
         }
 
@@ -687,7 +739,7 @@ header {
           position: absolute;
           z-index: 2;
           height: 246px;
-          transition: opacity 1000ms ease-in;
+          transition: opacity 400ms ease-in;
 
           @media (min-width: 450px) {
             height: 286px;
@@ -695,7 +747,7 @@ header {
 
           // Upper
           & > div:first-child {
-            height: 60%;
+            height: 50%;
             display: flex;
             align-items: flex-end;
             position: relative;
@@ -708,7 +760,7 @@ header {
             h4 {
               color: $white;
               text-transform: uppercase;
-              font-size: 1.3em;
+              font-size: 1.6em;
               line-height: 1.15em;
               font-family: 'Montserrat';
               font-weight: 800;
@@ -737,7 +789,7 @@ header {
           }
 
           & > div:last-child {
-            height: 40%;
+            height: 50%;
             position: relative;
             top: 40px;
 
@@ -747,7 +799,7 @@ header {
 
             h5 {
               color: $white;
-              font-size: 0.75em;
+              font-size: 1em;
               line-height: 1.15em;
               font-family: 'Montserrat';
               font-weight: 200;
@@ -788,18 +840,20 @@ header {
 
 .part-three {
   width: 100vw;
+  display: none;
   height: 100%;
   min-height: 100vh;
   z-index: 1;
   background: #000;
-  display: flex;
+  // display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  padding: $header-height 35px;
+  padding: 5px 35px;
 
   @media (min-width: 450px) {
     padding: 0;
+    justify-content: center;
   }
 
   .status-bar {
@@ -834,6 +888,10 @@ header {
 
         @media (min-width: 450px) {
           font-size: 1.8em;
+
+          br {
+            display: none;
+          }
         }
       }
 
@@ -847,7 +905,7 @@ header {
         letter-spacing: 3px;
         margin: 15px 0 0 0;
         opacity: 0;
-        transition: opacity 1000ms ease-in;
+        transition: opacity 500ms ease-in;
 
         @media (min-width: 450px) {
           font-size: 1.2em;
@@ -856,15 +914,15 @@ header {
     }
 
     .right-side {
-      width: 60%;
+      width: 40%;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: fixed;
       bottom: 25px;
-      left: 20%;
+      left: 30%;
       opacity: 0;
-      transition: opacity 1000ms ease-in;
+      transition: opacity 400ms ease-in;
 
       @media (min-width: 450px) {
         position: static;
@@ -872,8 +930,8 @@ header {
       }
 
       span {
-        width: 20px;
-        height: 20px;
+        width: 15px;
+        height: 15px;
         background: #fff;
         opacity: 0.5;
         border-radius: 50%;
@@ -894,14 +952,13 @@ header {
     width: 100%;
     max-width: 1280px;
     margin: 0 auto;
-    // display: none;
-    display: flex;
+    display: none;
     flex-direction: column;
     margin-top: 20px;
 
     @media (min-width: 450px) {
       height: calc(80% - 75px);
-      margin-top: 100px;
+      margin-top: 75px;
       flex-direction: row;
     }
 
@@ -910,10 +967,29 @@ header {
       display: flex;
       flex-direction: column;
       cursor: pointer;
+      // opacity: 0;
       transition: padding 300ms ease-in;
 
       @media (min-width: 450px) {
         width: 50%;
+      }
+
+      br.desktop {
+        display: none;
+      }
+
+      br.mobile {
+        display: block;
+      }
+
+      @media (min-width: 450px) {
+        br.mobile {
+          display: none;
+        }
+
+        br.desktop {
+          display: block;
+        }
       }
 
       &:first-child {
@@ -939,6 +1015,12 @@ header {
             color: $white;
           }
         }
+
+        &.correct {
+          img {
+            transform: translateX(50px);
+          }
+        }
       }
 
       &:last-child {
@@ -961,42 +1043,35 @@ header {
             color: $blackish;
           }
         }
+
+        &.correct {
+          img {
+            transform: translateX(-50px);
+          }
+        }
       }
 
       .option {
         width: 100%;
         padding: 20px;
+        display: flex;
 
         @media (min-width: 450px) {
           height: 340px;
-        }
-
-        br.mobile {
-          display: block;
-        }
-
-        br.desktop {
-          display: none;
-        }
-
-        @media (min-width: 450px) {
-          br.mobile {
-            display: none;
-          }
-
-          br.desktop {
-            display: block;
-          }
         }
 
         h3 {
           font-family: 'Montserrat';
           font-weight: 300;
           font-size: 1.5em;
+          letter-spacing: 3px;
           text-transform: uppercase;
+          // opacity: 0;
+          transition: opacity 550ms ease-in;
 
           @media (min-width: 450px) {
             font-size: 3em;
+            width: 100%;
           }
         }
 
@@ -1004,7 +1079,7 @@ header {
           display: none;
           font-family: 'Montserrat';
           font-size: 12em;
-          font-weight: 900;
+          font-weight: 200;
           line-height: 1em;
         }
 
@@ -1014,23 +1089,41 @@ header {
           text-transform: uppercase;
           font-size: 2.2em;
           line-height: 1em;
+          font-weight: 200;
         }
 
-        &.correct {
-          h4 {
-            font-weight: 200;
-          }
+        img {
+          display: inline-block;
+          width: 50px;
+          height: 50px;
+          align-self: flex-end;
 
-          h5 {
-            font-weight: 300;
-          }
-
-          & + img {
-            transform: translateX(50px)
+          @media (min-width: 450px) {
+            display: none;
           }
         }
+      }
 
-        &.solution {
+      img {
+        display: none;
+        transition: opacity 400ms ease-in-out;
+        transition: transform 450ms ease-in;
+
+        @media (min-width: 450px) {
+          display: block;
+          width: 100px;
+          margin: 50px 0 0 0;
+        }
+      }
+
+      &.solution {
+        padding: 0;
+
+        .option {
+          @media (min-width: 450px) {
+            flex-direction: column;
+          }
+
           h3 {
             display: none;
           }
@@ -1038,16 +1131,35 @@ header {
           h4, h5 {
             display: block;
           }
+
+          & + img {
+            display: none;
+          }
         }
       }
 
-      img {
-        display: none;
+      &.correct {
+        .option {
+          h4 {
+            font-weight: 900;
 
-        @media (min-width: 450px) {
-          display: block;
-          width: 100px;
-          margin: 50px 0 0 0;
+            @media (max-width: 450px) {
+              font-size: 5em;
+            }
+          }
+
+          h5 {
+            font-weight: 900;
+
+            @media (max-width: 450px) {
+              font-size: 1em;
+            }
+          }
+
+          & + img {
+            display: block;
+            // transform: translateX(50px);
+          }
         }
       }
     }

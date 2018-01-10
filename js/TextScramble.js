@@ -34,7 +34,7 @@ class TextScramble {
           char = this.randomChar()
           this.queue[i].char = char
         }
-        output += `<span class="dud">${char}</span>`
+        output += `<span class='scrambling'>${char}</span>`
       } else {
         output += from
       }
@@ -52,6 +52,9 @@ class TextScramble {
       this.frameRequest = window.requestAnimationFrame(this.update)
       this.frame++
     }
+  }
+  newElement (el) {
+    this.el = el
   }
   setMultiLineText (newText, separator) {
     this.lines = newText.split(separator).map(line => line.trim())

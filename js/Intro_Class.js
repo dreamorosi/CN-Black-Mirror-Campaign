@@ -17,14 +17,14 @@ class Intro {
 
     this.shutdownCallBack = settings.shutDownCall
 
-    this.currentScene = 6
+    this.currentScene = 0
     this.isLoaderVisible = 0
     // An animation is running, discard this scroll evt ? 1 : 0
     this.isTransitioning = 1
     // The main thread is busy, discard this scroll evt ? 1 : 0
     this.isThreadBusy = false
     this.scrollId = null
-    this.scrollDelta = []
+
     this.paragraph = this.root.querySelector('p')
     this.loader = this.root.querySelector('img')
 

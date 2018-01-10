@@ -13,38 +13,32 @@ function viewport () {
 class One {
   constructor (settings) {
     if (!settings.root) {
-      console.error('No root element passed.')
-      return
+      throw Error(`No root element passed.`)
     }
     this.root = settings.root
     this.scenes = Array.from(this.root.querySelectorAll('.slide'))
     if (!this.scenes.length) {
-      console.error('No scenes found.')
-      return
+      throw Error(`No scenes found.`)
+    }
+
+    if (!settings.shutDownCall || typeof settings.shutDownCall !== 'function') {
+      throw Error(`No shutdown callback passed passed.`)
     }
 
     this.clientW = viewport().width
+    this.shutdownCallBack = settings.shutDownCall
     this.currentScene = 0
     // An animation is running, discard this scroll evt ? 1 : 0
     this.isTransitioning = 1
-    // The main thread is busy, discard this scroll evt ? 1 : 0
-    this.thtrottling = 0
-    // Scrolling is locked, discard this scroll evt ? 1 : 0
-    this.scrollLocked = 1
-    this.scrollId = null
-    this.scrollDelta = []
+
     this.isHelperVisible = 0
     this.scrollHelper = settings.scrollHelper
 
     if (!this.scrollHelper) {
-      console.error('No scrollHelper element passed.')
-      return
+      throw Error(`No scrollHelper element passed.`)
     }
 
     this.showCurrent = this.showCurrent.bind(this)
-    this.scrollGrain = this.scrollGrain.bind(this)
-    this.scrollWatcher = this.scrollWatcher.bind(this)
-    this.scrollCoach = this.scrollCoach.bind(this)
     this.prev = this.prev.bind(this)
     this.next = this.next.bind(this)
     this.transitionFinished = this.transitionFinished.bind(this)
@@ -58,22 +52,19 @@ class One {
     this.hideSecond = this.hideSecond.bind(this)
     this.showThird = this.showThird.bind(this)
     this.hideThird = this.hideThird.bind(this)
-    this.hideFourth = this.hideFourth.bind(this)
+    this.shutdown = this.shutdown.bind(this)
     this.observeSecondHandler = this.observeSecondHandler.bind(this)
     this.observeThirdHandler = this.observeThirdHandler.bind(this)
     this.observeFourthHandler = this.observeFourthHandler.bind(this)
     this.toggleElementOpacity = this.toggleElementOpacity.bind(this)
 
-    if (settings.scrollGrain) {
-      window.addEventListener('scroll', this.scrollWatcher)
-    }
-
-    this.first = {}
+    this.first = { form: { state: {} } }
     this.second = {}
     this.third = {}
     this.elements = {}
     this.fourth = {}
     this.prepareFirst()
+    // this.first.form.state.values = { daysPegado: 2500, yearsPegado: 7.5 }
     // this.prepareSecond()
     // this.prepareThird()
     // this.prepareFourth()
@@ -81,41 +72,6 @@ class One {
     setTimeout(() => {
       this.showCurrent()
     }, 300)
-  }
-
-  scrollGrain () {
-    if (this.scrollId === null) {
-      this.scrollId = setTimeout(this.scrollCoach, 300)
-    } else {
-      clearTimeout(this.scrollId)
-      this.scrollId = setTimeout(this.scrollCoach, 300)
-    }
-
-    this.scrollDelta.push(window.scrollY)
-
-    this.thtrottling = 0
-  }
-
-  scrollWatcher () {
-    if (!this.thtrottling && !this.isTransitioning && !this.scrollLocked) {
-      // Exec only if main thread is not busy
-      window.requestAnimationFrame(this.scrollGrain)
-
-      this.thtrottling = 1
-    }
-  }
-
-  scrollCoach () {
-    let sum = this.scrollDelta.reduce((a, b) => a + b)
-    let avg = sum / this.scrollDelta.length
-    this.scrollDelta = []
-    if (avg > 0.5) {
-      console.log('Up!')
-      this.next()
-    } else {
-      console.log('Down!')
-      this.prev()
-    }
   }
 
   toggleScrollHelper () {
@@ -144,95 +100,139 @@ class One {
     this.isTransitioning = 0
   }
 
-  // TODO: refactor when scenes are in common array
-  checkReferences (obj, name) {
-    let result = true
-    let keys = Object.keys(obj)
-    keys.forEach(key => {
-      if (!obj[key]) {
-        result = false
-      }
-    })
-
-    if (!result) {
-      throw Error(`Scene ${name} is missing elements`)
-    }
-  }
-
   prepareFirst () {
-    this.first.form = this.scenes[0].querySelector('form')
-    this.first.firstLabel = this.scenes[0].querySelector('label[for="age"]')
-    this.first.firstInput = this.scenes[0].querySelector('input[name="age"]')
-    this.first.secondLabel = this.scenes[0].querySelector('label[for="time"]')
-    this.first.secondInput = this.scenes[0].querySelector('input[name="time"]')
-
-    this.checkReferences(this.first, 'one')
-
-    this.isFormFilled = 0
-    this.formValues = {
-      age: null,
-      time: null
+    let currentScene = this.scenes[0]
+    this.first = {
+      form: {
+        node: currentScene.querySelector('form'),
+        state: {
+          isVisible: 1,
+          isFilled: 0,
+          values: {
+            age: null,
+            time: null
+          }
+        }
+      },
+      labels: [{
+        node: currentScene.querySelector('label[for="age"]'),
+        state: {
+          isVisible: 0
+        }
+      }, {
+        node: currentScene.querySelector('label[for="time"]'),
+        state: {
+          isVisible: 0
+        }
+      }],
+      inputs: [{
+        node: currentScene.querySelector('input[name="age"]'),
+        state: {
+          isVisible: 0
+        }
+      }, {
+        node: currentScene.querySelector('input[name="time"]'),
+        state: {
+          isVisible: 0
+        }
+      }]
     }
-    this.first.firstInput.addEventListener('change', this.handleFormChange)
-    this.first.secondInput.addEventListener('change', this.handleFormChange)
+
+    this.first.inputs[0].node.addEventListener('change', this.handleFormChange)
+    this.first.inputs[1].node.addEventListener('change', this.handleFormChange)
 
     this.isTransitioning = 0
   }
 
   showFirst () {
     this.scenes[0].style.display = 'flex'
-    this.first.form.style.opacity = 1
-    this.first.firstLabel.style.opacity = 1
-    let that = this
-    setTimeout(function () {
-      that.first.firstInput.style.opacity = 1
-    }, 500)
-    setTimeout(function () {
-      that.first.secondLabel.style.opacity = 1
-    }, 1000)
-    setTimeout(function () {
-      that.first.secondInput.style.opacity = 1
-    }, 1500)
+    let { first } = this
+    setTimeout(() => {
+      this.toggleElementOpacity(first.labels[0])
+    }, 50)
+    setTimeout(() => {
+      this.toggleElementOpacity(first.inputs[0])
+    }, 150)
+    setTimeout(() => {
+      this.toggleElementOpacity(first.labels[1])
+    }, 250)
+    setTimeout(() => {
+      this.toggleElementOpacity(first.inputs[1])
+    }, 400)
   }
 
   hideFirst () {
-    this.first.form.style.opacity = 0
+    this.toggleElementOpacity(this.first.form)
     this.toggleScrollHelper()
-    let that = this
-    setTimeout(function () {
-      that.scenes[0].style.display = 'none'
-    }, 1100)
-    setTimeout(this.next, 1200)
+    setTimeout(() => {
+      this.scenes[0].style.display = 'none'
+    }, 500)
+    setTimeout(this.next, 500)
   }
 
   handleFormChange (e) {
-    this.formValues[e.target.name] = parseInt(e.target.value)
-    if (this.formValues.age && this.formValues.time) {
-      setTimeout(this.showScrollHelper, 1000)
-      this.scrollHelper.addEventListener('click', this.submitForm)
+    let { form } = this.first
+    form.state.values[e.target.name] = parseInt(e.target.value)
+    let { age, time } = form.state.values
+    if (age && time) {
+      this.showResultButton()
+      this.toggleScrollHelper()
       this.prepareSecond()
     }
   }
 
+  showResultButton () {
+    this.resultButton = document.createElement('P')
+    let textnode = document.createTextNode('Ver Resultados')
+    this.resultButton.appendChild(textnode)
+    this.scrollHelper.parentNode.appendChild(this.resultButton)
+    this.scrollHelper.addEventListener('click', this.submitForm)
+    this.resultButton.addEventListener('click', this.submitForm)
+    this.resultButton.style.opacity = '1'
+  }
+
+  removeResultButton () {
+    this.resultButton.style.display = 'none'
+  }
+
   submitForm () {
     let statAge = 82
-    this.formValues.days = (statAge - this.formValues.age) * 365
-    this.formValues.hours = 24 * this.formValues.days
-    this.scrollHelper.removeEventListener('click', this.submitForm)
-    this.hideFirst()
+    let { form } = this.first
+    let { age, time } = form.state.values
+    let days = (statAge - age) * 365
+    let hours = time * days
+
+    if (time > 5) {
+      let vida = document.querySelector('.vida')
+      this.toggleElementOpacity(this.first.form)
+      this.toggleScrollHelper()
+      setTimeout(() => {
+        this.scenes[0].style.display = 'none'
+      }, 500)
+      vida.style.display = 'flex'
+    } else {
+      form.state.values.daysPegado = Math.floor(hours / 24)
+      form.state.values.yearsPegado = (form.state.values.daysPegado / 365).toFixed(1)
+      this.scrollHelper.removeEventListener('click', this.submitForm)
+      this.hideFirst()
+    }
+    this.resultButton.removeEventListener('click', this.submitForm)
+    this.removeResultButton()
   }
 
   observeSecond () {
     let options = {
-      threshold: [0]
+      threshold: 0,
+      rootMargin: '-10px'
     }
     this.secondObserver = new IntersectionObserver(this.observeSecondHandler, options)
-    this.secondObserver.observe(this.second.firstParagraph)
+    this.secondObserver.observe(this.second.graph.node)
   }
 
   observeSecondHandler (entry) {
-    if (entry[0].intersectionRatio <= 0 && this.currentScene === 1) {
-      this.second.graph.style.opacity = '1'
+    let { graph } = this.second
+    if (entry[0].intersectionRatio > 0 && this.currentScene === 1 && graph.state.shouldToggle) {
+      this.toggleElementOpacity(graph)
       this.showScrollHelper()
       this.scrollHelper.addEventListener('click', this.hideSecond)
       this.prepareThird()
@@ -240,68 +240,93 @@ class One {
   }
 
   prepareSecond () {
-    this.second.firstParagraph = this.scenes[1].querySelector('p:nth-of-type(1)')
-    this.second.firstBox = this.scenes[1].querySelector('.blue-box:nth-of-type(1)')
-    this.second.firstNumber = this.scenes[1].querySelector('.blue-box:nth-of-type(1) h3')
-    this.second.firstHeading = this.clientW > 500
-      ? this.scenes[1].querySelector('.blue-box:nth-of-type(1) h4')
-      : this.scenes[1].querySelector('.blue-box:nth-of-type(1) + h4')
+    let currentScene = this.scenes[1]
 
-    this.second.secondParagraph = this.scenes[1].querySelector('p:nth-of-type(2)')
-    this.second.secondBox = this.scenes[1].querySelector('.blue-box:nth-of-type(2)')
-    this.second.secondNumber = this.scenes[1].querySelector('.blue-box:nth-of-type(2) h3')
-    this.second.secondHeading = this.clientW > 500
-      ? this.scenes[1].querySelector('.blue-box:nth-of-type(2) h4')
-      : this.scenes[1].querySelector('.blue-box:nth-of-type(2) + h4')
+    let ps = Array.from(currentScene.querySelectorAll('p'))
+    this.second.paragraphs = ps.map(node => ({
+      node: node,
+      state: {
+        isVisible: false
+      }
+    }))
 
-    this.second.graph = this.scenes[1].querySelector('.right-side img')
+    let bx = Array.from(currentScene.querySelectorAll('.blue-box'))
+    this.second.boxes = bx.map(node => ({
+      node: node,
+      state: {
+        isVisible: false
+      }
+    }))
 
-    this.checkReferences(this.second, 'two')
+    let nr = Array.from(currentScene.querySelectorAll('.blue-box h3'))
+    this.second.numbers = nr.map(node => ({
+      node: node,
+      state: {
+        isVisible: false
+      }
+    }))
+
+    let hs = Array.from(currentScene.querySelectorAll('.blue-box h4'))
+    this.second.headings = hs.map(node => ({
+      node: node,
+      state: {
+        isVisible: false
+      }
+    }))
+
+    this.second.graph = {
+      node: currentScene.querySelector('.right-side img'),
+      state: {
+        isVisible: false,
+        shouldToggle: false
+      }
+    }
 
     if (this.clientW < 500) {
       this.observeSecond()
+      this.second.graph.state.shouldToggle = true
     }
   }
 
   showSecond () {
     this.scenes[1].style.display = 'flex'
-    this.second.firstParagraph.style.opacity = '1'
-    let that = this
-    setTimeout(function () {
-      that.second.firstBox.style.opacity = '1'
-    }, 500)
-    setTimeout(function () {
-      that.second.firstNumber.style.opacity = '1'
-      console.log('should start counting')
-    }, 1500)
-    setTimeout(function () {
-      that.second.firstHeading.style.opacity = '1'
-    }, 2000)
+    let { first, second } = this
+    this.toggleElementOpacity(second.paragraphs[0])
+    setTimeout(() => {
+      this.toggleElementOpacity(second.boxes[0])
+      second.numbers[0].node.innerHTML = first.form.state.values.daysPegado
+    }, 150)
+    setTimeout(() => {
+      this.toggleElementOpacity(second.numbers[0])
+    }, 300)
+    setTimeout(() => {
+      this.toggleElementOpacity(second.headings[0])
+    }, 450)
 
-    setTimeout(function () {
-      that.second.secondParagraph.style.opacity = '1'
-    }, 2500)
-    setTimeout(function () {
-      that.second.secondBox.style.opacity = '1'
-    }, 3500)
-    setTimeout(function () {
-      that.second.secondNumber.style.opacity = '1'
-      console.log('should start counting')
-    }, 4000)
-    setTimeout(function () {
-      that.second.secondHeading.style.opacity = '1'
-    }, 4500)
+    setTimeout(() => {
+      this.toggleElementOpacity(second.paragraphs[1])
+    }, 500)
+    setTimeout(() => {
+      this.toggleElementOpacity(second.boxes[1])
+      second.numbers[1].node.innerHTML = first.form.state.values.yearsPegado
+    }, 650)
+    setTimeout(() => {
+      this.toggleElementOpacity(second.numbers[1])
+    }, 800)
+    setTimeout(() => {
+      this.toggleElementOpacity(second.headings[1])
+    }, 950)
 
     if (this.clientW > 500) {
-      setTimeout(function () {
-        that.second.graph.style.opacity = '1'
-      }, 5500)
+      setTimeout(() => {
+        this.toggleElementOpacity(second.graph)
+      }, 1150)
 
-      setTimeout(function () {
-        that.showScrollHelper()
-        that.scrollHelper.addEventListener('click', that.hideSecond)
-        that.prepareThird()
-      }, 7000)
+      setTimeout(() => {
+        this.showScrollHelper()
+        this.scrollHelper.addEventListener('click', this.hideSecond)
+        this.prepareThird()
+      }, 1300)
     }
   }
 
@@ -310,7 +335,7 @@ class One {
     this.scrollHelper.removeEventListener('click', this.hideSecond)
     // stop observer (if running)
     if (this.secondObserver) {
-      this.secondObserver.unobserve(this.second.firstParagraph)
+      this.secondObserver.unobserve(this.second.graph.node)
     }
     // fadeout content
     this.scenes[1].querySelector('.left-side').style.opacity = '0'
@@ -423,8 +448,6 @@ class One {
         isVisible: 0
       }
     }))
-
-    // this.checkReferences(this.third, 'third')
   }
 
   toggleElementOpacity (el) {
@@ -631,7 +654,7 @@ class One {
       } else {
         setTimeout(() => {
           this.toggleScrollHelper()
-          this.scrollHelper.addEventListener('click', this.hideFourth)
+          this.scrollHelper.addEventListener('click', this.shutdown)
           console.log('should prepare part 2')
         }, 2000)
       }
@@ -702,17 +725,17 @@ class One {
       // Then toggle scrollHelper after 5 additional seconds
       setTimeout(() => {
         this.toggleScrollHelper()
-        this.scrollHelper.addEventListener('click', this.hideFourth)
+        this.scrollHelper.addEventListener('click', this.shutdown)
         console.log('should prepare part 2')
-      }, 8500)
+      }, 2500)
     }
   }
 
-  hideFourth () {
+  shutdown () {
     let { title, boxes } = this.fourth
 
     // remove evt listener from scrollHelper
-    this.scrollHelper.removeEventListener('click', this.hidefourth)
+    this.scrollHelper.removeEventListener('click', this.shutdown)
     // stop observer (if running)
     if (this.fourthObserver) {
       boxes.forEach(box => this.fourthObserver.unobserve(box.children[0].node))
@@ -732,7 +755,7 @@ class One {
       this.scenes[3].style.display = 'none'
     }, 1100)
     // call next
-    // setTimeout(this.next, 1200)
+    this.shutdownCallBack()
     console.log('Go to Part 2')
   }
 

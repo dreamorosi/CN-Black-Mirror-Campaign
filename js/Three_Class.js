@@ -13,14 +13,12 @@ function viewport () {
 class Three {
   constructor (settings) {
     if (!settings.root) {
-      console.error('No root element passed.')
-      return
+      throw Error(`No root element passed.`)
     }
     this.root = settings.root
     this.scenes = Array.from(this.root.querySelectorAll('.slide'))
     if (!this.scenes.length) {
-      console.error('No scenes found.')
-      return
+      throw Error(`No scenes found.`)
     }
 
     this.clientW = viewport().width
@@ -33,8 +31,7 @@ class Three {
     this.scrollHelper = settings.scrollHelper
 
     if (!this.scrollHelper) {
-      console.error('No scrollHelper element passed.')
-      return
+      throw Error(`No scrollHelper element passed.`)
     }
 
     this.showCurrent = this.showCurrent.bind(this)
@@ -45,16 +42,19 @@ class Three {
     this.showScrollHelper = this.showScrollHelper.bind(this)
     this.hideScrollHelper = this.hideScrollHelper.bind(this)
     this.toggleElementOpacity = this.toggleElementOpacity.bind(this)
+    this.handleClick = this.handleClick.bind(this)
+    this.advance = this.advance.bind(this)
 
     this.questions = {}
     this.prepareStatusBar()
     this.prepareQuestions()
+    this.root.style.display = 'flex'
     // this.prepareNormal()
     // this.prepareFinal()
 
     setTimeout(() => {
       this.showCurrent()
-    }, 300)
+    }, 150)
   }
 
   toggleScrollHelper () {
@@ -140,27 +140,50 @@ class Three {
     }))
 
     this.questions = this.questions.map(quest => {
-      let node = quest.node.querySelector('.option-box')
-      // IDEA: try parseInt(window.getComputedStyle(node).getPropertyValue('opacity'))
-      let imgObj = {
-        node: node,
-        state: {
-          isVisible: 0
+      let boxesE = Array.from(quest.node.querySelectorAll('.option-box'))
+      let boxes = boxesE.map(box => {
+        let obj = {
+          node: box,
+          state: {
+            isVisible: 0
+          }
         }
-      }
+
+        let optionsE = Array.from(box.querySelectorAll('.option'))
+        let options = optionsE.map(option => ({
+          node: option,
+          state: {
+            isVisible: 0
+          },
+          children: [{
+            node: option.querySelector('h3'),
+            state: {
+              isVisible: 0
+            }
+          }, {
+            node: option.querySelector('h4'),
+            state: {
+              isVisible: 0
+            }
+          }, {
+            node: option.querySelector('h5'),
+            state: {
+              isVisible: 0
+            }
+          }]
+        }))
+        obj.children = options
+        return obj
+      })
 
       quest = {
         node: quest.node,
         state: quest.state,
-        children: {
-          // options
-        }
+        children: boxes
       }
 
       return quest
     })
-
-    console.log(this.questions)
   }
 
   toggleStatusBar () {
@@ -208,6 +231,48 @@ class Three {
       statusBar.progress.children[prog].state.isFull = 1
       prog++
     }
+
+    let question = questions[currentQ]
+    question.node.style.display = 'flex'
+    // question.children[0]
+    question.children[0].node.addEventListener('click', this.handleClick, false)
+    question.children[1].node.addEventListener('click', this.handleClick, false)
+  }
+
+  handleClick (e) {
+    let c = [[
+      0, 55, 45
+    ], [
+      1, 22, 80
+    ], [
+      1, 22, 80
+    ], [
+      1, 45, 55
+    ], [
+      0, 55, 45
+    ], [
+      1, 30, 70
+    ]]
+
+    let { questions, currentQ } = this
+    let question = questions[currentQ]
+    let results = c[currentQ]
+    question.children[0].node.classList.add('solution')
+    question.children[1].node.classList.add('solution')
+    question.children[results[0]].node.classList.add('correct')
+
+    if (this.clientW > 500) {
+      question.children[0].node.style.width = c[currentQ][1] + '%'
+      question.children[1].node.style.width = c[currentQ][2] + '%'
+    } else {
+      question.children[0].node.style.height = c[currentQ][1] + '%'
+      question.children[1].node.style.height = c[currentQ][2] + '%'
+    }
+
+    if (!this.isHelperVisible) {
+      this.toggleScrollHelper()
+    }
+    this.scrollHelper.addEventListener('click', this.advance)
   }
 
   showNormal () {
@@ -237,6 +302,15 @@ class Three {
       this.currentScene++
       this.showCurrent()
       console.log(this.scenes[this.currentScene], 'NEXT')
+    }
+  }
+
+  advance () {
+    if (this.currentQ < this.questions.length - 1) {
+      this.transitionStarted()
+      this.questions[this.currentQ].node.style.display = 'none'
+      this.currentQ++
+      this.showQuestion()
     }
   }
 }
