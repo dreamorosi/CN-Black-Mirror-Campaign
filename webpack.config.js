@@ -59,7 +59,7 @@ module.exports = {
       use: [{
         loader: 'file-loader?limit=10000&mimetype=video/mp4',
         options: {
-          name: './videos/[hash].[ext]'
+          name: './videos/[name].[ext]'
         }
       }]
     },

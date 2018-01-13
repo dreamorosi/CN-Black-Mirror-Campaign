@@ -19,6 +19,15 @@ header {
   top: 0;
   left: 0;
   z-index: 99;
+
+  img {
+    width: 250px;
+
+    @media (min-width: 450px) {
+      width: auto;
+      height: 25px;
+    }
+  }
 }
 
 .scrollHelper {
@@ -63,10 +72,37 @@ header {
   color: #757575;
 }
 
+video {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  // min-width: 100%;
+  // min-height: 100%;
+  // width: auto;
+  // height: auto;
+  // z-index: -10;
+  transform: translateX(-50%) translateY(-50%);
+  background: #000;
+  background-size: cover;
+}
+
+.overlay {
+  background: url('../images/layerA.png') no-repeat;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: 1;
+  transform: translateX(-50%) translateY(-50%);
+}
+
 .intro {
   width: 100vw;
   height: 100%;
-  z-index: 1;
+  z-index: 2;
   transition: background-color 50ms linear;
   background-color: #000;
 
@@ -79,11 +115,13 @@ header {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    z-index: 3;
 
     img {
       opacity: 0;
       transition: opacity 1500ms ease-in;
       width: 164px;
+      z-index: 4;
     }
 
     p {
@@ -98,6 +136,7 @@ header {
       font-size: 1.2em;
       color: #fff;
       min-height: 66px;
+      z-index: 5;
       // max-height: 30px;
       // overflow: scroll;
 
@@ -131,7 +170,7 @@ header {
 .part-one {
   width: 100vw;
   height: 100%;
-  z-index: 1;
+  z-index: 2;
 
   .slide {
     width: 100%;
@@ -141,6 +180,7 @@ header {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    z-index: 3;
 
     @media (min-width: 450px) {
       max-width: 1280px;
@@ -162,6 +202,7 @@ header {
         max-width: 100vw;
         padding: 0 0 0 35px;
         transition: opacity 150ms ease-out;
+        z-index: 4;
 
         @media (min-width: 450px) {
           padding: 0;
@@ -176,7 +217,7 @@ header {
           font-size: 1.2em;
           text-transform: uppercase;
           opacity: 0;
-          transition: opacity 300ms ease-in;
+          transition: opacity 200ms ease-in;
 
           @media (min-width: 450px) {
             margin: 0 0 25px;
@@ -197,7 +238,7 @@ header {
           margin: 0 0 30px;
           border-radius: 0;
           opacity: 0;
-          transition: opacity 300ms ease-in;
+          transition: opacity 250ms ease-in;
 
           &::-webkit-inner-spin-button,
           &::-webkit-outer-spin-button {
@@ -219,6 +260,7 @@ header {
     &:nth-child(2) {
       display: none;
       padding: 75px 0;
+      z-index: 3;
 
       @media (min-width: 450px) {
         padding: 0;
@@ -233,7 +275,8 @@ header {
         flex-direction: column;
         align-items: center;
         min-height: calc(100vh - 75px);
-        transition: opacity 1000ms linear;
+        transition: opacity 500ms linear;
+        z-index: 4;
 
         @media (min-width: 450px) {
           width: 50%;
@@ -250,7 +293,7 @@ header {
           margin: 0;
           opacity: 0;
           text-align: center;
-          transition: opacity 1000ms linear;
+          transition: opacity 150ms linear;
           margin: 0 0 15px;
           text-shadow: 1px 0px 1px $white;
 
@@ -273,7 +316,7 @@ header {
           text-align: center;
           font-size: 5em;
           opacity: 0;
-          transition: opacity 1000ms linear;
+          transition: opacity 200ms linear;
           display: flex;
           flex-direction: column;
 
@@ -298,13 +341,14 @@ header {
             font-weight: 200;
             line-height: 1em;
             flex-grow: 2;
+            transition: opacity 250ms linear;
           }
 
           h4 {
             font-weight: 300;
             opacity: 0;
             font-size: 1.5rem;
-            transition: opacity 1000ms linear;
+            transition: opacity 300ms linear;
             flex-grow: 1;
             text-align: center;
 
@@ -334,7 +378,8 @@ header {
         display: flex;
         justify-content: center;
         align-items: center;
-        transition: opacity 1000ms linear;
+        transition: opacity 150ms linear;
+        z-index: 4;
 
         @media (min-width: 450px) {
           width: 50%;
@@ -344,7 +389,7 @@ header {
         img {
           width: 90%;
           opacity: 0;
-          transition: opacity 1000ms linear;
+          transition: opacity 150ms ease-in;
 
           @media (min-width: 450px) {
             width: 80%;
@@ -357,6 +402,7 @@ header {
       display: none;
       padding: 75px 0;
       flex-direction: column;
+      z-index: 3;
 
       @media (min-width: 450px) {
         padding: 0;
@@ -371,7 +417,8 @@ header {
         margin: 0 35px;
         font-weight: 300;
         opacity: 0;
-        transition: opacity 1000ms linear;
+        transition: opacity 150ms linear;
+        z-index: 4;
 
         @media (min-width: 450px) {
           margin: 0;
@@ -384,6 +431,7 @@ header {
         display: flex;
         flex-direction: column;
         width: 100%;
+        z-index: 4;
 
         & > div {
           display: flex;
@@ -419,7 +467,7 @@ header {
           margin: 35px auto 0;
           opacity: 0;
           object-fit: contain;
-          transition: opacity 500ms ease-in;
+          transition: opacity 150ms ease-in;
         }
 
         h4 {
@@ -429,7 +477,7 @@ header {
           text-align: center;
           margin: 35px 0;
           opacity: 0;
-          transition: opacity 500ms ease-in;
+          transition: opacity 150ms ease-in;
         }
 
         hr {
@@ -448,6 +496,7 @@ header {
       display: none;
       padding: 75px 0;
       flex-direction: column;
+      z-index: 3;
 
       h3 {
         font-family: 'Montserrat';
@@ -457,6 +506,7 @@ header {
         text-transform: uppercase;
         margin: 0 35px;
         font-weight: 300;
+        z-index: 4;
 
         @media (min-width: 450px) {
           margin: 0;
@@ -470,6 +520,7 @@ header {
         flex-direction: column;
         width: 100%;
         padding: 30px 35px;
+        z-index: 4;
 
         & > div {
           display: flex;
@@ -513,7 +564,8 @@ header {
           width: 100%;
           padding: 5px 0 5px 5px;
           opacity: 0;
-          transition: opacity 1000ms linear;
+          z-index: 4;
+          transition: opacity 150ms linear;
 
           & strong {
             font-weight: 600;
@@ -590,18 +642,49 @@ header {
 
 .vida {
   width: 100vw;
-  height: calc(100vh - 75px);
+  height: 100vh;
   display: none;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding-top: 100px;
+  padding-left: 50px;
+  background: #2F3BA2;
+
+  @media (min-width: 450px) {
+    height: 100vh;
+    padding-top: 250px;
+    padding-left: 100px;
+  }
 
   h2 {
-    font-size: 2em;
+    font-size: 1.5em;
+
     font-family: 'Montserrat';
     text-transform: uppercase;
     font-weight: 200;
     color: $white;
     line-height: 1em;
+    letter-spacing: 2px;
+
+    @media (min-width: 450px) {
+      font-size: 2em;
+    }
+  }
+
+  p {
+    position: fixed;
+    bottom: 50px;
+    background: #000;
+    color: $white;
+    font-family: 'Montserrat';
+    text-transform: uppercase;
+    font-weight: 200;
+    padding: 5px 10px;
+    font-size: 1.5em;
+    width: 240px;
+    text-align: center;
+    left: calc(50vw - 120px);
+    cursor: pointer;
   }
 }
 
@@ -609,7 +692,7 @@ header {
   width: 100vw;
   height: 100%;
   padding-top: $header-height;
-  z-index: 1;
+  z-index: 2;
   background: #000;
 
   .slide {
@@ -643,6 +726,7 @@ header {
         font-size: 1em;
         margin: 15px 0;
         padding: 0 35px;
+        z-index: 4;
 
         &:first-child {
           margin-top: 50px;
@@ -701,6 +785,7 @@ header {
       .img-box {
         width: 100%;
         opacity: 0;
+        z-index: 4;
         transition: opacity 1000ms ease-in;
 
         @media (min-width: 450px) {
@@ -724,9 +809,9 @@ header {
         img:first-child {
           opacity: 1;
           position: absolute;
-          z-index: 3;
+          z-index: 4;
           margin-left: 180px;
-          transition: opacity 350ms ease-out;
+          transition: opacity 150ms ease-out;
 
           @media (min-width: 450px) {
             margin: 30px 70px;
@@ -737,9 +822,9 @@ header {
         .texts {
           opacity: 0;
           position: absolute;
-          z-index: 2;
+          z-index: 3;
           height: 246px;
-          transition: opacity 400ms ease-in;
+          transition: opacity 200ms ease-in;
 
           @media (min-width: 450px) {
             height: 286px;
@@ -843,7 +928,7 @@ header {
   display: none;
   height: 100%;
   min-height: 100vh;
-  z-index: 1;
+  z-index: 2;
   background: #000;
   // display: flex;
   flex-direction: column;

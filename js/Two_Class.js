@@ -66,6 +66,11 @@ class Two {
     this.second = {}
     this.elements = {}
     this.prepareFirst()
+    this.video = this.root.querySelector('video')
+    this.vidSource = this.video.querySelector('source')
+    this.video.style.height = this.clientH
+    this.video.style.width = this.clientW
+    document.body.scrollTop = document.documentElement.scrollTop = 0
     // this.prepareSecond()
 
     setTimeout(() => {
@@ -109,6 +114,16 @@ class Two {
     }
   }
 
+  setVideo (n) {
+    this.vidSource.src = this.clientW < 500 ? `./videos/fondo_0${n}_m.mp4` : `./videos/fondo_0${n}.mp4`
+    this.video.load()
+    this.video.play().then(() => {
+      console.log('ok')
+    }).catch((error) => {
+      console.log(error)
+    })
+  }
+
   prepareFirst () {
     let currentScene = this.scenes[0]
     this.first = {
@@ -144,8 +159,9 @@ class Two {
     let { scenes, first } = this
     let currentScene = scenes[0]
     currentScene.style.display = 'block'
+    this.setVideo(2)
     setTimeout(() => {
-      this.toggleElementOpacity(first.title)
+      // this.toggleElementOpacity(first.title)
       first.imagesC.node.style.display = 'flex'
     }, 500)
 
@@ -260,6 +276,8 @@ class Two {
         isVisible: 0
       }
     }))
+
+    this.scrollHelper.parentNode.style.background = 'transparent'
     // OPTIMIZE: test references
   }
 
@@ -267,7 +285,7 @@ class Two {
     let { scenes, second } = this
     let currentScene = scenes[1]
     currentScene.style.display = 'flex'
-
+    this.setVideo(3)
     let delta = 0
     second.paragraphs.forEach(box => {
       setTimeout(() => {
@@ -296,7 +314,6 @@ class Two {
       this.toggleElementOpacity(box)
     })
 
-    this.scrollHelper.parentNode.style.background = 'transparent'
     this.toggleScrollHelper()
     // display none slide
     setTimeout(() => {

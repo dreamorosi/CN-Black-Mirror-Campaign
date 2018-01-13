@@ -64,6 +64,10 @@ class One {
     this.elements = {}
     this.fourth = {}
     this.prepareFirst()
+    this.video = this.root.querySelector('video')
+    this.vidSource = this.video.querySelector('source')
+    this.video.style.height = this.clientH
+    this.video.style.width = this.clientW
     // this.first.form.state.values = { daysPegado: 2500, yearsPegado: 7.5 }
     // this.prepareSecond()
     // this.prepareThird()
@@ -210,14 +214,29 @@ class One {
         this.scenes[0].style.display = 'none'
       }, 500)
       vida.style.display = 'flex'
+      let back = vida.querySelector('p')
+      back.addEventListener('click', () => {
+        window.location.reload()
+      })
     } else {
       form.state.values.daysPegado = Math.floor(hours / 24)
       form.state.values.yearsPegado = (form.state.values.daysPegado / 365).toFixed(1)
       this.scrollHelper.removeEventListener('click', this.submitForm)
       this.hideFirst()
+      this.setVideo(1)
     }
     this.resultButton.removeEventListener('click', this.submitForm)
     this.removeResultButton()
+  }
+
+  setVideo (n) {
+    this.vidSource.src = this.clientW < 500 ? `./videos/fondo_0${n}_m.mp4` : `./videos/fondo_0${n}.mp4`
+    this.video.load()
+    this.video.play().then(() => {
+      console.log('ok')
+    }).catch((error) => {
+      console.log(error)
+    })
   }
 
   observeSecond () {
@@ -295,38 +314,38 @@ class One {
     setTimeout(() => {
       this.toggleElementOpacity(second.boxes[0])
       second.numbers[0].node.innerHTML = first.form.state.values.daysPegado
-    }, 150)
+    }, 50)
     setTimeout(() => {
       this.toggleElementOpacity(second.numbers[0])
-    }, 300)
+    }, 100)
     setTimeout(() => {
       this.toggleElementOpacity(second.headings[0])
-    }, 450)
+    }, 150)
 
     setTimeout(() => {
       this.toggleElementOpacity(second.paragraphs[1])
-    }, 500)
+    }, 200)
     setTimeout(() => {
       this.toggleElementOpacity(second.boxes[1])
       second.numbers[1].node.innerHTML = first.form.state.values.yearsPegado
-    }, 650)
+    }, 250)
     setTimeout(() => {
       this.toggleElementOpacity(second.numbers[1])
-    }, 800)
+    }, 300)
     setTimeout(() => {
       this.toggleElementOpacity(second.headings[1])
-    }, 950)
+    }, 350)
 
     if (this.clientW > 500) {
       setTimeout(() => {
         this.toggleElementOpacity(second.graph)
-      }, 1150)
+      }, 500)
 
       setTimeout(() => {
         this.showScrollHelper()
         this.scrollHelper.addEventListener('click', this.hideSecond)
         this.prepareThird()
-      }, 1300)
+      }, 500)
     }
   }
 
@@ -466,7 +485,7 @@ class One {
     currentScene.style.display = 'flex'
     setTimeout(() => {
       this.toggleElementOpacity(this.third.title)
-    }, 500)
+    }, 50)
 
     // If on mobile trigger first box & start observing scrolling
     if (this.clientW < 500) {
@@ -474,16 +493,16 @@ class One {
       setTimeout(() => {
         // Toggle Image
         this.toggleElementOpacity(img)
-      }, 500)
+      }, 50)
 
       setTimeout(() => {
         // Toggle Text
         this.toggleElementOpacity(text)
-      }, 1500)
+      }, 150)
 
       setTimeout(() => {
         this.toggleElementOpacity(third.spacers[0])
-      }, 2500)
+      }, 200)
 
       this.observeThird()
     } else {
@@ -494,33 +513,33 @@ class One {
         setTimeout(() => {
           // Toggle Image
           this.toggleElementOpacity(img)
-        }, delta + 500)
+        }, delta + 50)
 
         setTimeout(() => {
           // Toggle Text
           this.toggleElementOpacity(text)
-        }, delta + 1000)
+        }, delta + 100)
 
-        delta = delta + 1500
+        delta = delta + 200
       })
 
       // Then trigger vertical spacers (border-right)
       setTimeout(() => {
         // Toggle Spacer
         third.boxes[0].node.style.borderRight = '1px solid #fff'
-      }, 2000)
+      }, 200)
 
       setTimeout(() => {
         // Toggle Spacer
         third.boxes[1].node.style.borderRight = '1px solid #fff'
-      }, 3500)
+      }, 350)
 
       // Then toggle scrollHelper after 5 additional seconds
       setTimeout(() => {
         this.toggleScrollHelper()
         this.scrollHelper.addEventListener('click', this.hideThird)
         this.prepareFourth()
-      }, 8500)
+      }, 1500)
     }
   }
 
@@ -667,7 +686,7 @@ class One {
     currentScene.style.display = 'flex'
     setTimeout(() => {
       this.toggleElementOpacity(this.fourth.title)
-    }, 500)
+    }, 50)
 
     // If on mobile trigger first box & start observing scrolling
     if (this.clientW < 500) {
@@ -675,52 +694,52 @@ class One {
       setTimeout(() => {
         // Toggle Label
         this.toggleElementOpacity(label)
-      }, 500)
+      }, 50)
 
       setTimeout(() => {
         // Toggle Text
         this.toggleElementOpacity(text)
-      }, 1500)
+      }, 150)
 
       setTimeout(() => {
         // Toggle Image
         this.toggleElementOpacity(img)
-      }, 2500)
+      }, 200)
 
       setTimeout(() => {
         this.toggleElementOpacity(fourth.spacers[0])
-      }, 3500)
+      }, 250)
 
       this.observeFourth()
     } else {
       // If on desktop trigger each box evry 1.5s
       let delta = 0
-      console.log(fourth.boxes)
+      // console.log(fourth.boxes)
       fourth.boxes.forEach(box => {
         let [ label, text, img ] = box.children
         setTimeout(() => {
           // Toggle Label
           this.toggleElementOpacity(label)
-        }, delta + 500)
+        }, delta + 50)
 
         setTimeout(() => {
           // Toggle Text
           this.toggleElementOpacity(text)
-        }, delta + 1000)
+        }, delta + 100)
 
         setTimeout(() => {
           // Toggle Image
           this.toggleElementOpacity(img)
-        }, delta + 1500)
+        }, delta + 150)
 
-        delta = delta + 1500
+        delta = delta + 150
       })
 
       // Then trigger vertical spacers (border-right)
       setTimeout(() => {
         // Toggle Spacer
         fourth.boxes[0].node.style.borderRight = '1px solid #fff'
-      }, 1500)
+      }, 150)
 
       // Then toggle scrollHelper after 5 additional seconds
       setTimeout(() => {

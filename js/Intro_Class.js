@@ -186,7 +186,7 @@ class Intro {
       this.toggleLoader()
       this.loader.src = 'http://placehold.it/100x100'
       this.loader.addEventListener('load', this.toggleLoader)
-      setTimeout(this.showScrollHelper, 3000)
+      setTimeout(this.showScrollHelper, 5000)
       this.scrollHelper.addEventListener('click', this.shutdown)
       console.log('Should preload next part')
     }
