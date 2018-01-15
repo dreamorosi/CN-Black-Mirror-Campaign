@@ -1,6 +1,12 @@
 /* global Image */
 import TextScramble from './TextScramble'
 import crackingGlassSrc from '../images/loading2.gif'
+import oneImgs0 from '../images/1-03.png'
+import oneImgs1 from '../images/1-04.png'
+import oneImgs2 from '../images/1-05.png'
+import oneImgs3 from '../images/1-06.png'
+import oneImgs4 from '../images/1-07.png'
+import oneImgs5 from '../images/1-08.png'
 
 class Intro {
   constructor (settings) {
@@ -139,6 +145,16 @@ class Intro {
     this.crackingGlass.src = crackingGlassSrc
   }
 
+  preloadOne () {
+    let img = new Image()
+    img.src = oneImgs0
+    img.src = oneImgs1
+    img.src = oneImgs2
+    img.src = oneImgs3
+    img.src = oneImgs4
+    img.src = oneImgs5
+  }
+
   toggleLoader () {
     if (this.isLoaderVisible) {
       this.loader.style.opacity = '0'
@@ -185,16 +201,16 @@ class Intro {
   }
 
   showCurrent () {
+    if (this.currentScene === 3) {
+      this.preloadOne()
+    }
     // Final scene
     if (this.currentScene === this.scenes.length - 1) {
-      // this.toggleLoader()
-      console.log(crackingGlassSrc)
       this.loader.src = crackingGlassSrc
-      // this.loader.addEventListener('load', this.toggleLoader)
-      setTimeout(this.showScrollHelper, 1000)
       this.scrollHelper.removeEventListener('click', this.next)
-      this.scrollHelper.addEventListener('click', this.shutdown)
-      console.log('Should preload next part')
+      setTimeout(() => {
+        this.scrollHelper.addEventListener('click', this.shutdown)
+      }, 1000)
     }
 
     // Trigger text animation
