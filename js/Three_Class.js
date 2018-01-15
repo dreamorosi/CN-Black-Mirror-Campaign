@@ -48,8 +48,12 @@ class Three {
     this.questions = {}
     this.prepareStatusBar()
     this.prepareQuestions()
-    this.root.style.display = 'flex'
+    this.root.style.display = 'block'
     this.normalS = 0
+    this.video = document.querySelector('video')
+    this.vidSource = this.video.querySelector('source')
+    this.video.style.height = this.clientH
+    this.video.style.width = this.clientW
     // this.prepareNormal()
     // this.prepareFinal()
 
@@ -82,6 +86,20 @@ class Three {
 
   transitionFinished () {
     this.isTransitioning = 0
+  }
+
+  setVideo (n) {
+    this.vidSource.src = this.clientW < 500 ? `./videos/fondo_0${n}_m.mp4` : `./videos/fondo_0${n}.mp4`
+    this.video.load()
+    this.video.play().then(() => {
+      console.log('ok')
+    }).catch((error) => {
+      console.log(error)
+    })
+  }
+
+  stopVideo () {
+    this.video.stop()
   }
 
   toggleElementOpacity (el) {
@@ -279,32 +297,62 @@ class Three {
     this.scrollHelper.addEventListener('click', this.advance)
   }
 
-  showNormal () {
-    console.log('show normal slide')
+  showFirstBlack () {
     let black = document.querySelector('.slide.black')
     black.style.display = 'flex'
     let lastP = document.querySelector('#lastText')
-    this.texts = [
-      '> Una persona toca su móvil, de media, unas 2.617 veces al día. /',
-      '> Ahora pregúntate. / <br /><br /> > ¿Cuanto tiempo inviertes en acariciar a otras personas? /',
-      '> El día de mañana, cuando ya no estés, dejarás un rastro de basura digital acumulada en la carpeta de algún disco duro. / <br /><br /> > Resistirá algunos meses. Puede que algunos años.<br /> pero después te borrarán y desparecerá tu rastro para siempre. o tal vez todos tus recuerdos vayan a parar a algún museo en el que haya gente que quiera pagar por ellos. / <br /><br /> > o que valgan tan poco, que nadie los quiera. /'
-    ]
-    if (this.normalS < 3) {
-      lastP.innerHTML = this.texts[this.normalS]
-      this.normalS++
-    } else {
-      black.style.display = 'none'
-      let final = document.querySelector('.slide.final')
-      final.style.paddingTop = '100px'
-      final.style.display = 'flex'
-    }
+    this.scrollHelper.addEventListener('click', this.next)
+    lastP.innerHTML = '> Una persona toca su móvil, de media, unas 2.617 veces al día. /'
+    this.setVideo(5)
+    this.normalS++
+  }
+
+  showSecondBlack () {
+    let blackOld = document.querySelector('.slide.black')
+    blackOld.style.display = 'none'
+    let black = document.querySelector('.slide.black2')
+    black.style.display = 'flex'
+    let lastP = document.querySelector('#lastText2')
+    let lastP2 = document.querySelector('#lastText3')
+    lastP.innerHTML = '> Ahora pregúntate. /'
+    lastP2.innerHTML = '> ¿Cuanto tiempo inviertes en acariciar a otras personas? /'
+    this.normalS++
+  }
+
+  showThirdBlack () {
+    let blackOld = document.querySelector('.slide.black2')
+    blackOld.style.display = 'none'
+    let black = document.querySelector('.slide.black3')
+    black.style.display = 'flex'
+    let lastP = document.querySelector('#lastText4')
+    let lastP2 = document.querySelector('#lastText5')
+    let lastP3 = document.querySelector('#lastText6')
+    lastP.innerHTML = '> El día de mañana, cuando ya no estés, dejarás un rastro de basura digital acumulada en la carpeta de algún disco duro. /'
+    lastP2.innerHTML = '> Resistirá algunos meses. Puede que algunos años.<br /> pero después te borrarán y desparecerá tu rastro para siempre. o tal vez todos tus recuerdos vayan a parar a algún museo en el que haya gente que quiera pagar por ellos. /'
+    lastP3.innerHTML = '> o que valgan tan poco, que nadie los quiera. /'
+  }
+
+  showLast () {
+    let black = document.querySelector('.slide.black3')
+    black.style.display = 'none'
+    let final = document.querySelector('.slide.final')
+    final.style.paddingTop = '100px'
+    final.style.display = 'flex'
   }
 
   showCurrent () {
     if (this.currentScene < 6) {
       this.showQuestion()
     } else {
-      this.showNormal()
+      if (this.currentScene === 6) {
+        this.showFirstBlack()
+      } else if (this.currentScene === 7) {
+        this.showSecondBlack()
+      } else if (this.currentScene === 8) {
+        this.showThirdBlack()
+      } else if (this.currentScene === 9) {
+        this.showLast()
+      }
     }
   }
 
@@ -335,7 +383,9 @@ class Three {
     } else {
       this.questions[this.currentQ].node.style.display = 'none'
       this.statusBar.node.style.display = 'none'
-      this.showNormal()
+      this.scrollHelper.removeEventListener('click', this.advance)
+      this.currentScene = 6
+      this.showCurrent()
       console.log('show black')
     }
   }

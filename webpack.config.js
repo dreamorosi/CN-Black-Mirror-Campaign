@@ -71,7 +71,7 @@ module.exports = {
         options: {
           hash: 'sha512',
           digest: 'hex',
-          name: './images/[hash].[ext]'
+          name: './images/[name].[ext]'
         }
       },
       {

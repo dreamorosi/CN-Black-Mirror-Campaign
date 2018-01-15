@@ -183,10 +183,10 @@ class Intro {
   showCurrent () {
     // Final scene
     if (this.currentScene === this.scenes.length - 1) {
-      this.toggleLoader()
-      this.loader.src = 'http://placehold.it/100x100'
-      this.loader.addEventListener('load', this.toggleLoader)
-      setTimeout(this.showScrollHelper, 5000)
+      // this.toggleLoader()
+      this.loader.src = './images/loading2.gif'
+      // this.loader.addEventListener('load', this.toggleLoader)
+      setTimeout(this.showScrollHelper, 3000)
       this.scrollHelper.addEventListener('click', this.shutdown)
       console.log('Should preload next part')
     }

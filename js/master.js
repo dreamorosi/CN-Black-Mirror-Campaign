@@ -84,9 +84,9 @@ function viewport () {
 }
 
 document.onload = (function () {
-  introInit()
-  // document.querySelector('.intro').style.display = 'none'
+  // introInit()
+  document.querySelector('.intro').style.display = 'none'
   // oneInit()
   // twoInit()
-  // threeInit()
+  threeInit()
 })()
