@@ -1,4 +1,6 @@
+/* global Image */
 import TextScramble from './TextScramble'
+import crackingGlassSrc from '../images/loading2.gif'
 
 class Intro {
   constructor (settings) {
@@ -76,10 +78,10 @@ class Intro {
     }
     this.scenes = settings.scenes
     this.toggleLoader()
-    let that = this
-    setTimeout(function () {
-      that.showCurrent()
-    }, 500)
+    setTimeout(this.showCurrent, 500)
+    setTimeout(this.showScrollHelper, 1000)
+    this.scrollHelper.addEventListener('click', this.next)
+    setTimeout(this.preloadGif, 1500)
   }
 
   handleTouchStart (evt) {
@@ -87,9 +89,7 @@ class Intro {
 
     // Advance when a single tap is made
     this.isTouchingId = setTimeout(() => {
-      if (!this.isTransitioning) {
-        this.next()
-      }
+      this.next()
     }, 100)
   }
 
@@ -125,13 +125,18 @@ class Intro {
 
   scrollWatcher (e) {
     this.scrollStatus.wheeling = true
-    if (!this.isThreadBusy && !this.isTransitioning && !this.scrollStatus.isBusy) {
+    if (!this.isThreadBusy && !this.scrollStatus.isBusy) {
       // Exec only if main thread is not busy
       window.requestAnimationFrame(() => this.scrollGrain(e))
 
       this.isThreadBusy = true
       this.scrollStatus.isBusy = true
     }
+  }
+
+  preloadGif () {
+    this.crackingGlass = new Image()
+    this.crackingGlass.src = crackingGlassSrc
   }
 
   toggleLoader () {
@@ -165,7 +170,6 @@ class Intro {
   transitionStarted () {
     this.isTransitioning = 1
 
-    window.clearTimeout(this.firstHelp)
     window.clearTimeout(this.autoadvance)
   }
 
@@ -184,9 +188,11 @@ class Intro {
     // Final scene
     if (this.currentScene === this.scenes.length - 1) {
       // this.toggleLoader()
-      this.loader.src = './images/loading2.gif'
+      console.log(crackingGlassSrc)
+      this.loader.src = crackingGlassSrc
       // this.loader.addEventListener('load', this.toggleLoader)
-      setTimeout(this.showScrollHelper, 3000)
+      setTimeout(this.showScrollHelper, 1000)
+      this.scrollHelper.removeEventListener('click', this.next)
       this.scrollHelper.addEventListener('click', this.shutdown)
       console.log('Should preload next part')
     }
@@ -194,8 +200,8 @@ class Intro {
     // Trigger text animation
     this.swapText()
 
-    // After 1.5 seconds we show the arrow one time
-    this.firstHelp = setTimeout(this.toggleScrollHelper, 1500)
+    // After 0.5 seconds we show the arrow one time
+    setTimeout(this.showScrollHelper, 500)
   }
 
   prev () {
@@ -219,12 +225,12 @@ class Intro {
   }
 
   shutdown () {
-    window.clearTimeout(this.firstHelp)
     window.clearTimeout(this.autoadvance)
     window.removeEventListener('touchstart', this.handleTouchStart, false)
     window.removeEventListener('touchmove', this.handleTouchMove, false)
     window.removeEventListener('wheel', this.scrollWatcher)
     this.scrollHelper.removeEventListener('click', this.shutdown)
+    this.hideScrollHelper()
     this.loader.removeEventListener('load', this.toggleLoader)
 
     this.root.style.display = 'none'

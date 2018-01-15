@@ -4,7 +4,7 @@ class TextScramble {
     this.chars = '!~-_\\/[]{}—=+*^?#________'
     this.update = this.update.bind(this)
   }
-  setText (newText) {
+  setText (newText, speed = 10) {
     const oldText = this.el.innerText
     const length = Math.max(oldText.length, newText.length)
     const promise = new Promise((resolve) => (this.resolve = resolve))
@@ -12,8 +12,8 @@ class TextScramble {
     for (let i = 0; i < length; i++) {
       const from = oldText[i] || ''
       const to = newText[i] || ''
-      const start = i + Math.floor(Math.random() * 10)
-      const end = i + start + Math.floor(Math.random() * 10)
+      const start = i + Math.floor(Math.random() * speed)
+      const end = i + start + Math.floor(Math.random() * speed)
       this.queue.push({ from, to, start, end })
     }
     window.cancelAnimationFrame(this.frameRequest)

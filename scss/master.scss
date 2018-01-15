@@ -47,7 +47,7 @@ header {
     -webkit-animation: pulse 2.5s infinite;
     animation: pulse 2.5s infinite;
     opacity: 0;
-    transition: opacity 2000ms ease-in;
+    transition: opacity 350ms ease-in-out;
     position: absolute;
   }
 
