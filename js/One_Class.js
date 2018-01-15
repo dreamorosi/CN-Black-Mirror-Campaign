@@ -64,7 +64,7 @@ class One {
     this.elements = {}
     this.fourth = {}
     this.prepareFirst()
-    this.video = this.root.querySelector('video')
+    this.video = document.querySelector('video')
     this.vidSource = this.video.querySelector('source')
     this.video.style.height = this.clientH
     this.video.style.width = this.clientW
@@ -75,6 +75,7 @@ class One {
 
     setTimeout(() => {
       this.showCurrent()
+      this.root.style.display = 'flex'
     }, 300)
   }
 
@@ -773,6 +774,7 @@ class One {
     setTimeout(() => {
       this.scenes[3].style.display = 'none'
     }, 1100)
+    this.root.style.display = 'none'
     // call next
     this.shutdownCallBack()
     console.log('Go to Part 2')

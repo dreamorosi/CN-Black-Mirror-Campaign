@@ -66,7 +66,7 @@ class Two {
     this.second = {}
     this.elements = {}
     this.prepareFirst()
-    this.video = this.root.querySelector('video')
+    this.video = document.querySelector('video')
     this.vidSource = this.video.querySelector('source')
     this.video.style.height = this.clientH
     this.video.style.width = this.clientW
@@ -75,6 +75,7 @@ class Two {
 
     setTimeout(() => {
       this.showCurrent()
+      this.root.style.display = 'flex'
     }, 300)
   }
 
@@ -161,7 +162,7 @@ class Two {
     currentScene.style.display = 'block'
     this.setVideo(2)
     setTimeout(() => {
-      // this.toggleElementOpacity(first.title)
+      this.toggleElementOpacity(first.title)
       first.imagesC.node.style.display = 'flex'
     }, 500)
 
@@ -319,6 +320,7 @@ class Two {
     setTimeout(() => {
       this.scenes[1].style.display = 'none'
     }, 500)
+    this.root.style.display = 'none'
     // call next
     this.shutdownCallBack()
     console.log('should go to part 3')

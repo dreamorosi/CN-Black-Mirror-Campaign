@@ -49,6 +49,7 @@ class Three {
     this.prepareStatusBar()
     this.prepareQuestions()
     this.root.style.display = 'flex'
+    this.normalS = 0
     // this.prepareNormal()
     // this.prepareFinal()
 
@@ -259,15 +260,18 @@ class Three {
     let results = c[currentQ]
     question.children[0].node.classList.add('solution')
     question.children[1].node.classList.add('solution')
-    question.children[results[0]].node.classList.add('correct')
 
-    if (this.clientW > 500) {
-      question.children[0].node.style.width = c[currentQ][1] + '%'
-      question.children[1].node.style.width = c[currentQ][2] + '%'
-    } else {
-      question.children[0].node.style.height = c[currentQ][1] + '%'
-      question.children[1].node.style.height = c[currentQ][2] + '%'
-    }
+    setTimeout(() => {
+      if (this.clientW > 500) {
+        question.children[0].node.style.width = c[currentQ][1] + '%'
+        question.children[1].node.style.width = c[currentQ][2] + '%'
+      } else {
+        // question.children[0].node.style.height = c[currentQ][1] + '%'
+        // question.children[1].node.style.height = c[currentQ][2] + '%'
+      }
+
+      question.children[results[0]].node.classList.add('correct')
+    }, 300)
 
     if (!this.isHelperVisible) {
       this.toggleScrollHelper()
@@ -277,6 +281,23 @@ class Three {
 
   showNormal () {
     console.log('show normal slide')
+    let black = document.querySelector('.slide.black')
+    black.style.display = 'flex'
+    let lastP = document.querySelector('#lastText')
+    this.texts = [
+      '> Una persona toca su móvil, de media, unas 2.617 veces al día. /',
+      '> Ahora pregúntate. / <br /><br /> > ¿Cuanto tiempo inviertes en acariciar a otras personas? /',
+      '> El día de mañana, cuando ya no estés, dejarás un rastro de basura digital acumulada en la carpeta de algún disco duro. / <br /><br /> > Resistirá algunos meses. Puede que algunos años.<br /> pero después te borrarán y desparecerá tu rastro para siempre. o tal vez todos tus recuerdos vayan a parar a algún museo en el que haya gente que quiera pagar por ellos. / <br /><br /> > o que valgan tan poco, que nadie los quiera. /'
+    ]
+    if (this.normalS < 3) {
+      lastP.innerHTML = this.texts[this.normalS]
+      this.normalS++
+    } else {
+      black.style.display = 'none'
+      let final = document.querySelector('.slide.final')
+      final.style.paddingTop = '100px'
+      final.style.display = 'flex'
+    }
   }
 
   showCurrent () {
@@ -306,11 +327,16 @@ class Three {
   }
 
   advance () {
-    if (this.currentQ < this.questions.length - 1) {
+    if (this.currentQ < 5) {
       this.transitionStarted()
       this.questions[this.currentQ].node.style.display = 'none'
       this.currentQ++
       this.showQuestion()
+    } else {
+      this.questions[this.currentQ].node.style.display = 'none'
+      this.statusBar.node.style.display = 'none'
+      this.showNormal()
+      console.log('show black')
     }
   }
 }
