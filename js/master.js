@@ -16,29 +16,49 @@ let introTexts = [
   'Asómate al espejo\n y obsérvate.',
   '¿Cuánto vale tu vida?'
 ]
+let introEl = document.querySelector('.intro')
+let oneEl = document.querySelector('.part-one')
+let twoEl = document.querySelector('.part-two')
+let threeEl = document.querySelector('.part-three')
+let scrollHelper = document.querySelector('.scrollHelper img')
 
-function introInit () {
-  let introElement = document.querySelector('.intro')
-  let scrollHelper = document.querySelector('.scrollHelper img')
+function introInit (scene = 0) {
+  window.intro = null
+  introEl.style.display = 'block'
+  window.one = null
+  oneEl.style.display = 'none'
+  window.two = null
+  twoEl.style.display = 'none'
+  window.three = null
+  threeEl.style.display = 'none'
 
   window.intro = new Intro({
-    root: introElement,
+    root: introEl,
     scenes: introTexts,
     scrollHelper: scrollHelper,
     scrollGrain: true,
-    shutDownCall: oneInit
+    shutDownCall: oneInit,
+    setScene: scene
   })
 }
 
-function oneInit () {
-  let partOne = document.querySelector('.part-one')
-  let scrollHelper = document.querySelector('.scrollHelper img')
+function oneInit (scene = 0) {
+  window.intro = null
+  introEl.style.display = 'none'
+  window.one = null
+  oneEl.style.display = 'flex'
+  window.two = null
+  twoEl.style.display = 'none'
+  window.three = null
+  threeEl.style.display = 'none'
 
   window.one = new One({
-    root: partOne,
+    root: oneEl,
     scrollHelper: scrollHelper,
     scrollGrain: false,
-    shutDownCall: twoInit
+    shutDownCall: twoInit,
+    restorePrev: introInit,
+    setScene: scene
   })
 }
 
@@ -49,44 +69,49 @@ const twoTexts = [
   '&gt; Dentro de 10 años será tu único recuerdo agradable.<br class="bg" /> Todo lo demás se habrá desvanecido. /'
 ]
 
-function twoInit () {
-  let partTwo = document.querySelector('.part-two')
-  let scrollHelper = document.querySelector('.scrollHelper img')
+function twoInit (scene = 0) {
+  window.intro = null
+  introEl.style.display = 'none'
+  window.one = null
+  oneEl.style.display = 'none'
+  window.two = null
+  // twoEl.style.display = 'none'
+  window.three = null
+  threeEl.style.display = 'none'
 
   window.two = new Two({
-    root: partTwo,
+    root: twoEl,
     scrollHelper: scrollHelper,
     scrollGrain: false,
     texts: twoTexts,
-    shutDownCall: threeInit
+    shutDownCall: threeInit,
+    restorePrev: oneInit,
+    setScene: scene
   })
 }
 
-function threeInit () {
-  let partThree = document.querySelector('.part-three')
-  let scrollHelper = document.querySelector('.scrollHelper img')
+function threeInit (scene = 0) {
+  window.intro = null
+  introEl.style.display = 'none'
+  window.one = null
+  oneEl.style.display = 'none'
+  window.two = null
+  twoEl.style.display = 'none'
+  window.three = null
+  // threeEl.style.display = 'none'
 
   window.three = new Three({
-    root: partThree,
+    root: threeEl,
     scrollHelper: scrollHelper,
-    scrollGrain: false
+    scrollGrain: false,
+    restorePrev: twoInit,
+    setScene: scene
   })
-}
-
-function viewport () {
-  var e = window
-  var a = 'inner'
-  if (!('innerWidth' in window)) {
-    a = 'client'
-    e = document.documentElement || document.body
-  }
-  return { width: e[a + 'Width'], height: e[a + 'Height'] }
 }
 
 document.onload = (function () {
-  introInit()
-  // document.querySelector('.intro').style.display = 'none'
+  // introInit()
   // oneInit()
   // twoInit()
-  // threeInit()
+  threeInit()
 })()

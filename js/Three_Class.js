@@ -1,4 +1,4 @@
-/* global IntersectionObserver */
+import TextScramble from './TextScramble'
 
 function viewport () {
   var e = window
@@ -158,6 +158,7 @@ class Three {
       }
     }))
 
+    let i = 1
     this.questions = this.questions.map(quest => {
       let boxesE = Array.from(quest.node.querySelectorAll('.option-box'))
       let boxes = boxesE.map(box => {
@@ -167,6 +168,16 @@ class Three {
             isVisible: 0
           }
         }
+
+        let imgObjs = Array.from(box.querySelectorAll('img'))
+        if (i < 10) {
+          imgObjs[0].src = `./images/3-${i + 14}.png`
+          imgObjs[1].src = `./images/3-0${i}.png`
+        } else {
+          imgObjs[0].src = `./images/3-${i + 14}.png`
+          imgObjs[1].src = `./images/3-${i}.png`
+        }
+        i++
 
         let optionsE = Array.from(box.querySelectorAll('.option'))
         let options = optionsE.map(option => ({
@@ -203,6 +214,7 @@ class Three {
 
       return quest
     })
+    this.scrollHelper.style.bottom = '35px'
   }
 
   toggleStatusBar () {
@@ -251,6 +263,7 @@ class Three {
       prog++
     }
 
+    questions.forEach(q => (q.node.style.display = 'none'))
     let question = questions[currentQ]
     question.node.style.display = 'flex'
     // question.children[0]
@@ -278,6 +291,9 @@ class Three {
     let results = c[currentQ]
     question.children[0].node.classList.add('solution')
     question.children[1].node.classList.add('solution')
+    question.children[0].node.removeEventListener('click', this.handleClick, false)
+    question.children[1].node.removeEventListener('click', this.handleClick, false)
+    question.children[results[0]].node.classList.add('correct')
 
     setTimeout(() => {
       if (this.clientW > 500) {
@@ -287,22 +303,20 @@ class Three {
         // question.children[0].node.style.height = c[currentQ][1] + '%'
         // question.children[1].node.style.height = c[currentQ][2] + '%'
       }
+    }, 150)
 
-      question.children[results[0]].node.classList.add('correct')
-    }, 300)
-
-    if (!this.isHelperVisible) {
-      this.toggleScrollHelper()
-    }
+    this.showScrollHelper()
     this.scrollHelper.addEventListener('click', this.advance)
   }
 
   showFirstBlack () {
+    this.scrollHelper.style.bottom = '15px'
     let black = document.querySelector('.slide.black')
     black.style.display = 'flex'
     let lastP = document.querySelector('#lastText')
     this.scrollHelper.addEventListener('click', this.next)
-    lastP.innerHTML = '> Una persona toca su móvil, de media, unas 2.617 veces al día. /'
+    let fx = new TextScramble(lastP)
+    fx.setText('> Una persona toca su móvil, de media, unas 2.617 veces al día. /')
     this.setVideo(5)
     this.normalS++
   }
@@ -314,8 +328,10 @@ class Three {
     black.style.display = 'flex'
     let lastP = document.querySelector('#lastText2')
     let lastP2 = document.querySelector('#lastText3')
-    lastP.innerHTML = '> Ahora pregúntate. /'
-    lastP2.innerHTML = '> ¿Cuanto tiempo inviertes en acariciar a otras personas? /'
+    let fx = new TextScramble(lastP)
+    fx.setText('> Ahora pregúntate. /')
+    fx = new TextScramble(lastP2)
+    fx.setText('> ¿Cuanto tiempo inviertes en acariciar a otras personas? /')
     this.normalS++
   }
 
@@ -327,17 +343,27 @@ class Three {
     let lastP = document.querySelector('#lastText4')
     let lastP2 = document.querySelector('#lastText5')
     let lastP3 = document.querySelector('#lastText6')
-    lastP.innerHTML = '> El día de mañana, cuando ya no estés, dejarás un rastro de basura digital acumulada en la carpeta de algún disco duro. /'
-    lastP2.innerHTML = '> Resistirá algunos meses. Puede que algunos años.<br /> pero después te borrarán y desparecerá tu rastro para siempre. o tal vez todos tus recuerdos vayan a parar a algún museo en el que haya gente que quiera pagar por ellos. /'
-    lastP3.innerHTML = '> o que valgan tan poco, que nadie los quiera. /'
+    let fx = new TextScramble(lastP)
+    fx.setText('> El día de mañana, cuando ya no estés, dejarás un rastro de basura digital acumulada en la carpeta de algún disco duro. /')
+    fx = new TextScramble(lastP2)
+    fx.setText('> Resistirá algunos meses. Puede que algunos años.<br /> pero después te borrarán y desparecerá tu rastro para siempre. o tal vez todos tus recuerdos vayan a parar a algún museo en el que haya gente que quiera pagar por ellos. /')
+    fx = new TextScramble(lastP3)
+    fx.setText('> o que valgan tan poco, que nadie los quiera. /')
   }
 
   showLast () {
     let black = document.querySelector('.slide.black3')
     black.style.display = 'none'
     let final = document.querySelector('.slide.final')
-    final.style.paddingTop = '100px'
+    if (this.clientW > 500) {
+      final.style.paddingTop = '100px'
+    } else {
+      final.style.paddingTop = '50px'
+    }
     final.style.display = 'flex'
+    this.video.pause()
+    this.video.style.display = 'none'
+    this.hideScrollHelper()
   }
 
   showCurrent () {

@@ -5,14 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Black Mirror | Código Nuevo</title>
   </head>
+
+  <style media="screen">
+    body {
+      background: #000;
+    }
+    .scrollHelper img, .scrollHelper p, .intro .slide img {
+      opacity: 0;
+    }
+
+    .part-one, .part-two, .part-three {
+      display: none;
+    }
+
+    header {
+      width: 100vw;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 99;
+    }
+
+    header img {
+      width: 250px;
+    }
+    @media (min-width: 450px) {
+      header img {
+        width: auto;
+        height: 20px;
+      }
+    }
+  </style>
   <body>
     <header>
-      <img src="/images/logos.png" alt="logos" />
+      <a href="http://codigonuevo.com" title="Código Nuevo: La información que te conecta con el mundo" target="_blank">
+        <img src="/images/logos-01.png" alt="Código Nuevo" />
+      </a>
+      <a href="http://netflix.com" title="Netflix" target="_blank">
+        <img src="/images/logos-02.png" alt="Netflix" />
+      </a>
     </header>
 
     <section class="intro">
       <div class="slide">
-        <img src="/images/0-spinner.gif" alt="Loading...">
+        <img src="/images/0-02.gif" alt="Loading...">
         <p></p>
       </div>
     </section>
@@ -53,12 +94,12 @@
           <hr />
           <div>
             <img src="#" alt="damos todo al móvil" data-idx="1">
-            <h4>Se lo damos todo;<br />dinero, atención,<br />espacio, energia.</h4>
+            <h4>Se lo damos todo;<br />dinero, atención,<br />espacio, energía.</h4>
           </div>
           <hr />
           <div>
             <img src="#" alt="dedicamos más tiempo al móvil que a comer" data-idx="2">
-            <h4>En general dedicamos<br />más tiempo al smartphone<br />que ad alimentarnos.</h4>
+            <h4>En general dedicamos<br />más tiempo al smartphone<br />que a alimentarnos.</h4>
           </div>
         </div>
       </div>
@@ -98,288 +139,194 @@
         <h2>&gt; ¿Y qué<br /> podrías hacer<br /> en 7 años de<br /> tu vida? /</h2>
         <div class="images">
           <div class="img-box" data-idx="0">
-            <img src="./images/2-01.png" alt="">
+            <img src="#" alt="Dar dos veces la vuelta al mundo a pie">
             <div class="texts">
               <div>
                 <h4>
-                  <span data-txt="Dar dos veces">
-                    Dar dos veces
-                  </span>
+                  <span data-txt="Dar dos veces">Dar dos veces</span>
                   <br />
-                  <span data-txt="la vuelta al">
-                    la vuelta al
-                  </span>
+                  <span data-txt="la vuelta al">la vuelta al</span>
                   <br />
-                  <span data-txt="mundo a pie">
-                    mundo a pie
-                  </span>
+                  <span data-txt="mundo a pie">mundo a pie</span>
                 </h4>
               </div>
               <div>
                 <h5>
-                  <span>
-                    (El español <strong>Nacho Dean</strong>
-                  </span>
+                  <span>(El español <strong>Nacho Dean</strong></span>
                   <br />
-                  <span>
-                    estuvo <strong>3 años medio</strong>)
-                  </span>
+                  <span>estuvo <strong>3 años medio</strong>)</span>
                 </h5>
               </div>
             </div>
-            <img src="./images/2-09.png" alt="">
+            <img src="#" alt="Dar dos veces la vuelta al mundo a pie">
           </div>
           <div class="img-box" data-idx="1">
-            <img src="./images/2-02.png" alt="">
+            <img src="#" alt="Pintar “Las Meninas”">
             <div class="texts">
               <div>
                 <h4>
-                  <span data-txt="Pintar">
-                    Pintar
-                  </span>
+                  <span data-txt="Pintar">Pintar</span>
                   <br />
-                  <span data-txt="“Las Meninas”">
-                    “Las Meninas”
-                  </span>
+                  <span data-txt="“Las Meninas”">“Las Meninas”</span>
                 </h4>
               </div>
               <div>
                 <h5>
-                  <span>
-                    (<strong>Velázquez</strong> sólo tardó
-                  </span>
+                  <span>(<strong>Velázquez</strong> sólo tardó</span>
                   <br />
-                  <span>
-                    <strong>5 años</strong> en hacerlo)
-                  </span>
+                  <span><strong>5 años</strong> en hacerlo)</span>
                 </h5>
               </div>
             </div>
-            <img src="./images/2-10.png" alt="">
+            <img src="#" alt="Pintar “Las Meninas”">
           </div>
           <div class="img-box" data-idx="2">
-            <img src="./images/2-03.png" alt="">
+            <img src="#" alt="Aprender Árabe, chino y japonés">
             <div class="texts">
               <div>
                 <h4>
-                  <span data-txt="Aprender">
-                    Aprender
-                  </span>
+                  <span data-txt="Aprender">Aprender</span>
                   <br />
-                  <span data-txt="Árabe, chino">
-                    Árabe, chino
-                  </span>
+                  <span data-txt="Árabe, chino">Árabe, chino</span>
                   <br />
-                  <span data-txt="y japonés">
-                    y japonés
-                  </span>
+                  <span data-txt="y japonés">y japonés</span>
                 </h4>
               </div>
               <div>
                 <h5>
-                  <span>
-                    (Se tardan <strong>5 años</strong> en
-                  </span>
+                  <span>(Se tardan <strong>5 años</strong> en</span>
                   <br />
-                  <span>
-                    aprenderlos todos)
-                  </span>
+                  <span>aprenderlos todos)</span>
                 </h5>
               </div>
             </div>
-            <img src="./images/2-11.png" alt="">
+            <img src="#" alt="Aprender Árabe, chino y japonés">
           </div>
           <div class="img-box" data-idx="3">
-            <img src="./images/2-04.png" alt="">
+            <img src="#" alt="Montar Apple">
             <div class="texts">
               <div>
                 <h4>
-                  <span data-txt="Montar Apple">
-                    Montar Apple
-                  </span>
+                  <span data-txt="Montar Apple">Montar Apple</span>
                   <br />
-                  <span data-txt="Hacerte">
-                    Hacerte
-                  </span>
+                  <span data-txt="Hacerte">Hacerte</span>
                   <br />
-                  <span data-txt="Millonario">
-                    Millonario
-                  </span>
+                  <span data-txt="Millonario">Millonario</span>
                   <br />
-                  <span data-txt="y pegarte">
-                    y pegarte
-                  </span>
+                  <span data-txt="y pegarte">y pegarte</span>
                   <br />
-                  <span data-txt="dos años">
-                    dos años
-                  </span>
+                  <span data-txt="dos años">dos años</span>
                   <br />
-                  <span data-txt="sabáticos">
-                    sabáticos
-                  </span>
+                  <span data-txt="sabáticos">sabáticos</span>
                 </h4>
               </div>
               <div>
                 <h5>
-                  <span>
-                    (<strong>Steve Jobs</strong> tardó <strong>5 años</strong>
-                  </span>
+                  <span>(<strong>Steve Jobs</strong> tardó <strong>5 años</strong></span>
                   <br />
-                  <span>
-                    en ser el multimillonario
-                  </span>
+                  <span>en ser el multimillonario</span>
                   <br />
-                  <span>
-                    más joven en salir en la
-                  </span>
+                  <span>más joven en salir en la</span>
                   <br />
-                  <span>
-                    portada de <strong>Time</strong>)
-                  </span>
+                  <span>portada de <strong>Time</strong>)</span>
                 </h5>
               </div>
             </div>
-            <img src="./images/2-12.png" alt="">
+            <img src="#" alt="Montar Apple">
           </div>
           <div class="img-box" data-idx="4">
-            <img src="./images/2-05.png" alt="">
+            <img src="#" alt="Rodar la trilogía de regreso al futuro">
             <div class="texts">
               <div>
                 <h4>
-                  <span data-txt="Rodar la">
-                    Rodar la
-                  </span>
+                  <span data-txt="Rodar la">Rodar la</span>
                   <br />
-                  <span data-txt="trilogía entera">
-                    trilogía entera
-                  </span>
+                  <span data-txt="trilogía entera">trilogía entera</span>
                   <br />
-                  <span data-txt="de regreso">
-                    de regreso
-                  </span>
+                  <span data-txt="de regreso">de regreso</span>
                   <br />
-                  <span data-txt="al futuro">
-                    al futuro
-                  </span>
+                  <span data-txt="al futuro">al futuro</span>
                 </h4>
               </div>
               <div>
                 <h5>
-                  <span>
-                    (<strong>Zemeckis</strong> tardó poco
-                  </span>
+                  <span>(<strong>Zemeckis</strong> tardó poco</span>
                   <br />
-                  <span>
-                    menos de <strong>6 años</strong> en rodarla)
-                  </span>
+                  <span>menos de <strong>6 años</strong> en rodarla)</span>
                 </h5>
               </div>
             </div>
-            <img src="./images/2-13.png" alt="">
+            <img src="#" alt="Rodar la trilogía de regreso al futuro">
           </div>
           <div class="img-box" data-idx="5">
-            <img src="./images/2-06.png" alt="">
+            <img src="#" alt="Escribir, componer y grabar el nevermind">
             <div class="texts">
               <div>
                 <h4>
-                  <span data-txt="Escribir,">
-                    Escribir,
-                  </span>
+                  <span data-txt="Escribir,">Escribir,</span>
                   <br />
-                  <span data-txt="componer">
-                    componer
-                  </span>
+                  <span data-txt="componer">componer</span>
                   <br />
-                  <span data-txt="y grabar el">
-                    y grabar el
-                  </span>
+                  <span data-txt="y grabar el">y grabar el</span>
                   <br />
-                  <span data-txt="nevermind">
-                    nevermind
-                  </span>
+                  <span data-txt="nevermind">nevermind</span>
                 </h4>
               </div>
               <div>
                 <h5>
-                  <span>
-                    (Del origen de <strong>Nirvana</strong>
-                  </span>
+                  <span>(Del origen de <strong>Nirvana</strong></span>
                   <br />
-                  <span>
-                    a la grabación del disco
-                  </span>
+                  <span>a la grabación del disco</span>
                   <br />
-                  <span>
-                    pasaron <strong>6 años</strong>)
-                  </span>
+                  <span>pasaron <strong>6 años</strong>)</span>
                 </h5>
               </div>
             </div>
-            <img src="./images/2-14.png" alt="">
+            <img src="#" alt="Escribir, componer y grabar el nevermind">
           </div>
           <div class="img-box" data-idx="6">
-            <img src="./images/2-07.png" alt="">
+            <img src="#" alt="Escribir El Ulysses">
             <div class="texts">
               <div>
                 <h4>
-                  <span data-txt="Escribir">
-                    Escribir
-                  </span>
+                  <span data-txt="Escribir">Escribir</span>
                   <br />
-                  <span data-txt="El Ulysses">
-                    El Ulysses
-                  </span>
+                  <span data-txt="El Ulysses">El Ulysses</span>
                 </h4>
               </div>
               <div>
                 <h5>
-                  <span>
-                    (<strong>James Joyce</strong> tardó
-                  </span>
+                  <span>(<strong>James Joyce</strong> tardó</span>
                   <br />
-                  <span>
-                    exactamente <strong>7 años</strong>)
-                  </span>
+                  <span>exactamente <strong>7 años</strong>)</span>
                 </h5>
               </div>
             </div>
-            <img src="./images/2-15.png" alt="">
+            <img src="#" alt="Escribir El Ulysses">
           </div>
           <div class="img-box" data-idx="7">
-            <img src="./images/2-08.png" alt="">
+            <img src="#" alt="Reparar corazones enfermos">
             <div class="texts">
               <div>
                 <h4>
-                  <span data-txt="Dar dos veces">
-                    Dar dos veces
-                  </span>
+                  <span data-txt="Reparar">Reparar</span>
                   <br />
-                  <span data-txt="la vuelta al">
-                    la vuelta al
-                  </span>
+                  <span data-txt="corazones">corazones</span>
                   <br />
-                  <span data-txt="mundo a pie">
-                    mundo a pie
-                  </span>
+                  <span data-txt="enfermos">enfermos</span>
                 </h4>
               </div>
               <div>
                 <h5>
-                  <span>
-                    (<strong>5 años</strong> de Medicina
-                  </span>
+                  <span>(<strong>5 años</strong> de Medicina</span>
                   <br />
-                  <span>
-                    mas otros <strong>2 años</strong> de)
-                  </span>
+                  <span>mas otros <strong>2 años</strong> de)</span>
                   <br />
-                  <span>
-                    Cardiología)
-                  </span>
+                  <span>Cardiología)</span>
                 </h5>
               </div>
             </div>
-            <img src="./images/2-16.png" alt="">
+            <img src="#" alt="Reparar corazones enfermos">
           </div>
         </div>
       </div>
@@ -392,10 +339,6 @@
 
         <p data-idx="3"></p>
       </div>
-      <!-- <div class="overlay"></div>
-      <video autoplay loop muted playsinline>
-        <source src="#" type="video/mp4" />
-      </video> -->
     </section>
 
     <section class="part-three">
@@ -419,18 +362,18 @@
             <h3>En pasar un<br class="desktop" /><br class="mobile" /> rato con<br class="desktop" /><br class="mobile" /> nuestra<br class="desktop" /><br class="mobile" /> familia</h3>
             <h4>49</h4>
             <h5>Minutos al día<br class="desktop mobile" /> que pasamos<br class="desktop mobile" /> con nuestra<br class="mobile" /> familia</h5>
-            <img src="/images/3-15.png" alt="Familia">
+            <img src="#" alt="Familia">
           </div>
-          <img src="/images/3-01.png" alt="Familia">
+          <img src="#" alt="Familia">
         </div>
         <div class="option-box">
           <div class="option">
             <h3>En pasar un<br class="desktop" /><br class="mobile" /> rato viendo<br class="desktop" /> vídeos de<br class="desktop mobile" /> YouTube</h3>
             <h4>40</h4>
             <h5>Minutos al día<br class="desktop mobile" /> que vemos<br class="desktop mobile" /> videos en<br class="mobile" /> YouTube</h5>
-            <img src="/images/3-16.png" style="width: 60px" alt="YouTube">
+            <img src="#" style="width: 60px" alt="YouTube">
           </div>
-          <img src="/images/3-02.png" alt="YouTube">
+          <img src="#" alt="YouTube">
         </div>
       </div>
       <div class="slide">
@@ -439,16 +382,16 @@
             <h3>En sonreír</h3>
             <h4>20</h4>
             <h5>Veces al<br class="desktop mobile" /> día que<br class="desktop mobile" /> sonreimos</h5>
-            <img src="/images/3-17.png" alt="Sonreír">
+            <img src="#" alt="Sonreír">
           </div>
-          <img src="/images/3-03.png" alt="Sonreír">
+          <img src="#" alt="Sonreír">
         </div>
         <div class="option-box">
           <div class="option">
             <h3>En desbloquear<br class="desktop mobile" /> nuestro móvil</h3>
             <h4>80</h4>
-            <h5>Veces al día<br class="desktop mobile" /> que desblo<br class="desktop mobile" /> queamos<br class="mobile" /> el móvil</h5>
-            <img src="/images/3-18.png" style="width: 60px" alt="Desbloquear">
+            <h5>Veces al día<br class="desktop mobile" /> que desbloqueamos<br class="mobile" /> el móvil</h5>
+            <img src="/images/3-18.png" alt="Desbloquear">
           </div>
           <img src="/images/3-04.png" alt="Desbloquear">
         </div>
@@ -459,16 +402,16 @@
             <h3>En hacer<br class="desktop mobile"/> deporte</h3>
             <h4>1</h4>
             <h5>Hora a la<br class="desktop mobile" /> semana<br class="desktop mobile" /> de deporte</h5>
-            <img src="/images/3-19.png" alt="Deporte">
+            <img src="#" alt="Deporte">
           </div>
-          <img src="/images/3-05.png" alt="Deporte">
+          <img src="#" alt="Deporte">
         </div>
         <div class="option-box">
           <div class="option">
             <h3>En hacernos<br class="desktop mobile" /> selfies</h3>
             <h4>5</h4>
-            <h5>Hora a la semana<br class="desktop mobile" /> dedicatas a<br class="mobile" /> hacer selfies</h5>
-            <img src="/images/3-20.png" alt="Selfies">
+            <h5>Hora a la semana<br class="desktop mobile" /> dedicadas a<br class="mobile" /> hacer selfies</h5>
+            <img src="/images/3-20.png" style="width: 60px" alt="Selfies">
           </div>
           <img src="/images/3-06.png" alt="Selfies">
         </div>
@@ -479,9 +422,9 @@
             <h3>En salir al cine,<br class="desktop mobile"/> de bares,<br class="mobile" /> o a una discoteca</h3>
             <h4>3,2</h4>
             <h5>Horas a la<br class="desktop mobile" /> semana que<br class="desktop mobile" /> vamos al cine,<br class="mobile"/> bares y<br class="mobile"/> discotecas.</h5>
-            <img src="/images/3-21.png" alt="Salír">
+            <img src="#" alt="Salír">
           </div>
-          <img src="/images/3-07.png" alt="Salír">
+          <img src="#" alt="Salír">
         </div>
         <div class="option-box">
           <div class="option">
@@ -499,18 +442,18 @@
             <h3>En ignorar a<br class="desktop mobile"/> nuestra pareja<br class="mobile" /> por alguna<br class="mobile" /> estupidez</h3>
             <h4>54%</h4>
             <h5>De gente<br class="desktop mobile" /> ignora a su<br class="desktop mobile" /> pareja por<br class="mobile"/> alguna<br class="mobile"/> estupidez.</h5>
-            <img src="/images/3-23.png" alt="Ignorar">
+            <img src="#" style="width: 40px" alt="Ignorar">
           </div>
-          <img src="/images/3-09.png" alt="Ignorar">
+          <img src="#" alt="Ignorar">
         </div>
         <div class="option-box">
           <div class="option">
             <h3>En ignorar a<br class="desktop mobile" /> nuestra pareja<br class="mobile" /> por culpa del<br class="mobile" /> móvil</h3>
             <h4>46%</h4>
             <h5>De gente<br class="desktop mobile" /> ignora a su<br class="mobile"/> pareja por<br class="mobile" /> culpa del<br class="mobile"/> móvil</h5>
-            <img src="/images/3-24.png" alt="Ignorar" />
+            <img src="#" style="width: 40px" alt="Ignorar" />
           </div>
-          <img src="/images/3-10.png" alt="Ignorar">
+          <img src="#" alt="Ignorar">
         </div>
       </div>
       <div class="slide f">
@@ -518,19 +461,19 @@
           <div class="option">
             <h3>En ignorar a<br class="desktop mobile"/> nuestra pareja<br class="mobile" /> por alguna<br class="mobile" /> estupidez</h3>
             <h4>4</h4>
-            <h5>Tenemos más<br class="desktop mobile" /> amigos en<br class="mobile"/> una crisis<br class="mobile"/> personal.</h5>
-            <img src="/images/3-25.png" alt="Personal">
+            <h5>Amigos de<br class="desktop mobile" /> verdad en los<br class="mobile"/> quien confiar.</h5>
+            <img src="#" style="width: 60px" alt="Personal">
           </div>
-          <img src="/images/3-11.png" alt="Personal">
+          <img src="#" alt="Personal">
         </div>
         <div class="option-box">
           <div class="option">
             <h3>Tenemos más<br class="desktop mobile" /> amigos en<br class="mobile" /> nuestra<br class="mobile" /> red social</h3>
             <h4>155</h4>
             <h5>Amigos en<br class="desktop mobile" /> nuestras<br class="mobile"/> redes<br class="mobile" /> sociales de<br class="mobile"/> media</h5>
-            <img src="/images/3-26.png" alt="Social" />
+            <img src="#" style="width: 60px" alt="Social" />
           </div>
-          <img src="/images/3-12.png" alt="Social">
+          <img src="#" alt="Social">
         </div>
       </div>
       <div class="slide black">
@@ -559,7 +502,7 @@
     </video>
 
     <aside class="scrollHelper">
-      <img src="/images/0-down.svg" alt="Scroll down to next section">
+      <img src="/images/0-01.svg" alt="Scroll down to next section">
     </aside>
 
   </body>

@@ -1,14 +1,21 @@
-/* global IntersectionObserver */
-
-function viewport () {
-  var e = window
-  var a = 'inner'
-  if (!('innerWidth' in window)) {
-    a = 'client'
-    e = document.documentElement || document.body
-  }
-  return { width: e[a + 'Width'], height: e[a + 'Height'] }
-}
+/* global IntersectionObserver Image */
+import viewport from './viewport'
+import twoImgs0 from '../images/2-01.png'
+import twoImgs1 from '../images/2-02.png'
+import twoImgs2 from '../images/2-03.png'
+import twoImgs3 from '../images/2-04.png'
+import twoImgs4 from '../images/2-05.png'
+import twoImgs5 from '../images/2-06.png'
+import twoImgs6 from '../images/2-07.png'
+import twoImgs7 from '../images/2-08.png'
+import twoImgs8 from '../images/2-09.png'
+import twoImgs9 from '../images/2-10.png'
+import twoImgs10 from '../images/2-11.png'
+import twoImgs11 from '../images/2-12.png'
+import twoImgs12 from '../images/2-13.png'
+import twoImgs13 from '../images/2-14.png'
+import twoImgs14 from '../images/2-15.png'
+import twoImgs15 from '../images/2-16.png'
 
 class One {
   constructor (settings) {
@@ -33,6 +40,7 @@ class One {
 
     this.isHelperVisible = 0
     this.scrollHelper = settings.scrollHelper
+    this.restorePrev = settings.restorePrev
 
     if (!this.scrollHelper) {
       throw Error(`No scrollHelper element passed.`)
@@ -75,7 +83,6 @@ class One {
 
     setTimeout(() => {
       this.showCurrent()
-      this.root.style.display = 'flex'
     }, 300)
   }
 
@@ -111,7 +118,7 @@ class One {
       form: {
         node: currentScene.querySelector('form'),
         state: {
-          isVisible: 1,
+          isVisible: 0,
           isFilled: 0,
           values: {
             age: null,
@@ -152,6 +159,7 @@ class One {
   showFirst () {
     this.scenes[0].style.display = 'flex'
     let { first } = this
+    this.toggleElementOpacity(this.first.form)
     setTimeout(() => {
       this.toggleElementOpacity(first.labels[0])
     }, 50)
@@ -164,11 +172,21 @@ class One {
     setTimeout(() => {
       this.toggleElementOpacity(first.inputs[1])
     }, 400)
+    let { age, time } = first.form.state.values
+    if (age && time) {
+      this.showResultButton()
+      this.showScrollHelper()
+    }
   }
 
   hideFirst () {
-    this.toggleElementOpacity(this.first.form)
-    this.toggleScrollHelper()
+    let { first } = this
+    this.toggleElementOpacity(first.form)
+    this.toggleElementOpacity(first.labels[0])
+    this.toggleElementOpacity(first.inputs[0])
+    this.toggleElementOpacity(first.labels[1])
+    this.toggleElementOpacity(first.inputs[1])
+    this.hideScrollHelper()
     setTimeout(() => {
       this.scenes[0].style.display = 'none'
     }, 500)
@@ -302,6 +320,8 @@ class One {
       }
     }
 
+    this.second.graph.node.src = './images/1-03.png'
+
     if (this.clientW < 500) {
       this.observeSecond()
       this.second.graph.state.shouldToggle = true
@@ -311,35 +331,35 @@ class One {
   showSecond () {
     this.scenes[1].style.display = 'flex'
     let { first, second } = this
-    this.toggleElementOpacity(second.paragraphs[0])
+    this.showElementOpacity(second.paragraphs[0])
     setTimeout(() => {
-      this.toggleElementOpacity(second.boxes[0])
+      this.showElementOpacity(second.boxes[0])
       second.numbers[0].node.innerHTML = first.form.state.values.daysPegado
     }, 50)
     setTimeout(() => {
-      this.toggleElementOpacity(second.numbers[0])
+      this.showElementOpacity(second.numbers[0])
     }, 100)
     setTimeout(() => {
-      this.toggleElementOpacity(second.headings[0])
+      this.showElementOpacity(second.headings[0])
     }, 150)
 
     setTimeout(() => {
-      this.toggleElementOpacity(second.paragraphs[1])
+      this.showElementOpacity(second.paragraphs[1])
     }, 200)
     setTimeout(() => {
-      this.toggleElementOpacity(second.boxes[1])
+      this.showElementOpacity(second.boxes[1])
       second.numbers[1].node.innerHTML = first.form.state.values.yearsPegado
     }, 250)
     setTimeout(() => {
-      this.toggleElementOpacity(second.numbers[1])
+      this.showElementOpacity(second.numbers[1])
     }, 300)
     setTimeout(() => {
-      this.toggleElementOpacity(second.headings[1])
+      this.showElementOpacity(second.headings[1])
     }, 350)
 
     if (this.clientW > 500) {
       setTimeout(() => {
-        this.toggleElementOpacity(second.graph)
+        this.showElementOpacity(second.graph)
       }, 500)
 
       setTimeout(() => {
@@ -399,7 +419,7 @@ class One {
         }, 2000)
       } else {
         setTimeout(() => {
-          this.toggleScrollHelper()
+          this.showScrollHelper()
           this.scrollHelper.addEventListener('click', this.hideThird)
           this.prepareFourth()
         }, 2000)
@@ -430,6 +450,7 @@ class One {
 
     // OPTIMIZE: test references
 
+    let i = 4
     // Select img and text inside a box
     this.third.boxes = this.third.boxes.map(box => {
       let node = box.node.querySelector('img')
@@ -440,6 +461,9 @@ class One {
           isVisible: 0
         }
       }
+
+      imgObj.node.src = `./images/1-0${i}.png`
+      i++
 
       // OPTIMIZE: extrapolate utility
 
@@ -468,6 +492,28 @@ class One {
         isVisible: 0
       }
     }))
+
+    this.preloadThree()
+  }
+
+  preloadThree () {
+    let img = new Image()
+    img.src = twoImgs0
+    img.src = twoImgs1
+    img.src = twoImgs2
+    img.src = twoImgs3
+    img.src = twoImgs4
+    img.src = twoImgs5
+    img.src = twoImgs6
+    img.src = twoImgs7
+    img.src = twoImgs8
+    img.src = twoImgs9
+    img.src = twoImgs10
+    img.src = twoImgs11
+    img.src = twoImgs12
+    img.src = twoImgs13
+    img.src = twoImgs14
+    img.src = twoImgs15
   }
 
   toggleElementOpacity (el) {
@@ -478,6 +524,11 @@ class One {
       el.node.style.opacity = '1'
       el.state.isVisible = 1
     }
+  }
+
+  showElementOpacity (el) {
+    el.node.style.opacity = '1'
+    el.state.isVisible = 1
   }
 
   showThird () {
@@ -535,12 +586,12 @@ class One {
         third.boxes[1].node.style.borderRight = '1px solid #fff'
       }, 350)
 
-      // Then toggle scrollHelper after 5 additional seconds
+      // Then toggle scrollHelper after 0.5 seconds
       setTimeout(() => {
-        this.toggleScrollHelper()
-        this.scrollHelper.addEventListener('click', this.hideThird)
         this.prepareFourth()
-      }, 1500)
+        this.showScrollHelper()
+        this.scrollHelper.addEventListener('click', this.hideThird)
+      }, 500)
     }
   }
 
@@ -593,6 +644,7 @@ class One {
 
     // OPTIMIZE: test references
 
+    let i = 7
     // Select img and text inside a box
     this.fourth.boxes = this.fourth.boxes.map(box => {
       let labelNode = box.node.querySelector('p')
@@ -620,6 +672,9 @@ class One {
           isVisible: 0
         }
       }
+
+      imgObj.node.src = `./images/1-0${i}.png`
+      i++
 
       box.children = [
         labelObj,
@@ -673,7 +728,7 @@ class One {
 
       } else {
         setTimeout(() => {
-          this.toggleScrollHelper()
+          this.showScrollHelper()
           this.scrollHelper.addEventListener('click', this.shutdown)
           console.log('should prepare part 2')
         }, 2000)
@@ -744,10 +799,10 @@ class One {
 
       // Then toggle scrollHelper after 5 additional seconds
       setTimeout(() => {
-        this.toggleScrollHelper()
+        this.showScrollHelper()
         this.scrollHelper.addEventListener('click', this.shutdown)
         console.log('should prepare part 2')
-      }, 2500)
+      }, 500)
     }
   }
 
@@ -781,6 +836,11 @@ class One {
   }
 
   showCurrent () {
+    this.scenes[0].style.display = 'none'
+    this.scenes[1].style.display = 'none'
+    this.scenes[2].style.display = 'none'
+    this.scenes[3].style.display = 'none'
+
     switch (this.currentScene) {
       case 0:
         this.showFirst()

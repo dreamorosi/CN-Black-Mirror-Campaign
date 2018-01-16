@@ -20,11 +20,19 @@ header {
   left: 0;
   z-index: 99;
 
-  img {
-    width: 250px;
+  a {
+    &:first-child img {
+      width: 150px;
+    }
+
+    &:last-child img {
+      width: 100px;
+    }
 
     @media (min-width: 450px) {
-      width: auto;
+      &:first-child img, &:last-child img {
+        width: auto;
+      }
       height: 20px;
     }
   }
@@ -57,8 +65,15 @@ header {
     font-family: 'Montserrat';
     position: relative;
     opacity: 0;
-    transition: opacity 1000ms ease-in;
+    transition: opacity 500ms ease-in;
     top: -20px;
+    background: $blue;
+    padding: 5px 10px;
+
+    @media (min-width: 450px) {
+      background: none;
+      padding: 0;
+    }
   }
 }
 
@@ -76,11 +91,6 @@ video {
   position: fixed;
   top: 50%;
   left: 50%;
-  // min-width: 100%;
-  // min-height: 100%;
-  // width: auto;
-  // height: auto;
-  // z-index: -10;
   transform: translateX(-50%) translateY(-50%);
   background: #000;
   background-size: cover;
@@ -139,7 +149,7 @@ video {
       text-transform: uppercase;
       font-weight: 300;
       font-size: 1.2em;
-      color: #fff;
+      color: $white;
       min-height: 66px;
       z-index: 5;
       // max-height: 30px;
@@ -214,6 +224,7 @@ video {
         padding: 0 0 0 35px;
         transition: opacity 150ms ease-out;
         z-index: 4;
+        opacity: 0;
 
         @media (min-width: 450px) {
           padding: 0;
@@ -238,7 +249,7 @@ video {
         input {
           width: 300px;
           padding: 0;
-          border: 1px solid #2F3BA2;
+          border: 1px solid $blue;
           color: $white;
           background: transparent;
           text-align: center;
@@ -577,7 +588,7 @@ video {
 
         p {
           color: $white;
-          background: #2F3BA2;
+          background: $blue;
           font-family: 'Montserrat';
           font-weight: 300;
           font-size: 1.2em;
@@ -668,7 +679,13 @@ video {
   align-items: flex-start;
   padding-top: 100px;
   padding-left: 50px;
-  background: #2F3BA2;
+  background: $blue;
+  z-index: 98;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  overflow: scroll;
 
   @media (min-width: 450px) {
     height: 100vh;
@@ -870,7 +887,7 @@ video {
             h4 {
               color: $white;
               text-transform: uppercase;
-              font-size: 1.6em;
+              font-size: 1.3em;
               line-height: 1.15em;
               font-family: 'Montserrat';
               font-weight: 800;
@@ -879,6 +896,7 @@ video {
 
               @media (min-width: 450px) {
                 position: static;
+                font-size: 1.6em;
               }
 
               span {
@@ -887,7 +905,7 @@ video {
 
               span:after {
                 content: attr(data-txt);
-                background: #2F3BA2;
+                background: $blue;
                 padding: 0 5px 0 0;
                 mix-blend-mode: multiply;
                 position: absolute;
@@ -994,7 +1012,7 @@ video {
         text-transform: uppercase;
         font-family: 'Montserrat';
         font-weight: 300;
-        font-size: 1.4em;
+        font-size: 1.3em;
         letter-spacing: 5px;
         margin: 0;
         opacity: 0;
@@ -1010,7 +1028,7 @@ video {
       }
 
       p {
-        color: #2F3BA2;;
+        color: $blue;;
         text-transform: uppercase;
         font-family: 'Montserrat';
         font-weight: 300;
@@ -1033,7 +1051,7 @@ video {
       justify-content: space-between;
       align-items: center;
       position: fixed;
-      bottom: 25px;
+      bottom: 40px;
       left: 30%;
       opacity: 0;
       transition: opacity 400ms ease-in;
@@ -1046,7 +1064,7 @@ video {
       span {
         width: 15px;
         height: 15px;
-        background: #fff;
+        background: $white;
         opacity: 0.5;
         border-radius: 50%;
 
@@ -1065,7 +1083,7 @@ video {
   .slide {
     width: 90%;
     max-width: 1280px;
-    height: calc(100vh - 300px);
+    height: calc(calc(2 * 150px) + 30px);
     margin: 0 auto;
     display: none;
     flex-direction: column;
@@ -1178,7 +1196,7 @@ video {
       .option {
         width: 100%;
         height: 100%;
-        min-height: 184px;
+        min-height: 150px;
         padding: 20px;
         display: flex;
 
@@ -1190,12 +1208,13 @@ video {
         h3 {
           font-family: 'Montserrat';
           font-weight: 300;
-          font-size: 1.3em;
+          font-size: 1.15em;
           letter-spacing: 3px;
           text-transform: uppercase;
           // opacity: 0;
           transition: opacity 550ms ease-in;
           width: 90%;
+          transition: font-weight 250ms linear;
 
           @media (min-width: 450px) {
             font-size: 2.7em;
@@ -1210,6 +1229,7 @@ video {
           font-size: 9.5em;
           font-weight: 200;
           line-height: 1em;
+          transition: font-weight 250ms linear;
         }
 
         h5 {
@@ -1219,6 +1239,7 @@ video {
           font-size: 1.7em;
           line-height: 1em;
           font-weight: 200;
+          transition: font-weight 250ms linear;
         }
 
         img {
@@ -1265,7 +1286,7 @@ video {
 
           @media (max-width: 450px) {
             h4 {
-              font-size: 5em;
+              font-size: 4.5em;
               width: 32%;
             }
 
@@ -1288,7 +1309,7 @@ video {
             font-weight: 900;
 
             @media (max-width: 450px) {
-              font-size: 5em;
+              font-size: 4.5em;
             }
           }
 
@@ -1361,7 +1382,7 @@ video {
     min-height: calc(100vh - 75px);
 
     p {
-      color: #fff;
+      color: $white;
       font-family: 'Montserrat';
       text-align: center;
       text-transform: uppercase;
@@ -1377,7 +1398,7 @@ video {
     flex-direction: column;
 
     p {
-      color: #fff;
+      color: $white;
       font-family: 'Montserrat';
       text-align: center;
       text-transform: uppercase;
@@ -1392,7 +1413,7 @@ video {
     flex-direction: column;
 
     p {
-      color: #fff;
+      color: $white;
       font-family: 'Montserrat';
       text-align: center;
       text-transform: uppercase;

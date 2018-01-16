@@ -1,6 +1,6 @@
 /* global Image */
 import TextScramble from './TextScramble'
-import crackingGlassSrc from '../images/loading2.gif'
+import crackingGlassSrc from '../images/0-03.gif'
 import oneImgs0 from '../images/1-03.png'
 import oneImgs1 from '../images/1-04.png'
 import oneImgs2 from '../images/1-05.png'
@@ -25,7 +25,8 @@ class Intro {
 
     this.shutdownCallBack = settings.shutDownCall
 
-    this.currentScene = 0
+    this.currentScene = settings.setScene || 0
+    this.isRestored = settings.setScene !== 0
     this.isLoaderVisible = 0
     // An animation is running, discard this scroll evt ? 1 : 0
     this.isTransitioning = 1
@@ -208,9 +209,13 @@ class Intro {
     if (this.currentScene === this.scenes.length - 1) {
       this.loader.src = crackingGlassSrc
       this.scrollHelper.removeEventListener('click', this.next)
+      this.isRestored = true
       setTimeout(() => {
         this.scrollHelper.addEventListener('click', this.shutdown)
       }, 1000)
+    } else if (this.isRestored) {
+      this.loader.src = './images/0-02.gif'
+      this.scrollHelper.addEventListener('click', this.next)
     }
 
     // Trigger text animation
