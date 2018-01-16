@@ -87,7 +87,7 @@ header {
   color: #757575;
 }
 
-video {
+body > video {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -97,7 +97,7 @@ video {
   z-index: 0;
 }
 
-.overlay {
+body > .overlay {
   background: url('../images/layerA.png') no-repeat;
   position: fixed;
   top: 50%;
@@ -1473,7 +1473,7 @@ video {
       height: 300px;
 
       @media (min-width: 450px) {
-        width: auto;
+        width: 80vw;
         height: auto;
       }
     }

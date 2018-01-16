@@ -50,7 +50,7 @@ class Three {
     this.prepareQuestions()
     this.root.style.display = 'block'
     this.normalS = 0
-    this.video = document.querySelector('video')
+    this.video = document.querySelector('body > video')
     this.vidSource = this.video.querySelector('source')
     this.video.style.height = this.clientH
     this.video.style.width = this.clientW
@@ -355,14 +355,18 @@ class Three {
     let black = document.querySelector('.slide.black3')
     black.style.display = 'none'
     let final = document.querySelector('.slide.final')
-    if (this.clientW > 500) {
-      final.style.paddingTop = '100px'
-    } else {
-      final.style.paddingTop = '50px'
-    }
+    final.style.paddingTop = '50px'
     final.style.display = 'flex'
     this.video.pause()
-    this.video.style.display = 'none'
+    let lastV = final.querySelector('video')
+    let lastVsrc = lastV.querySelector('source')
+    if (this.clientW > 500) {
+      lastVsrc.src = './videos/trailer_wide.mp4'
+    } else {
+      lastVsrc.src = './videos/trailer_mobile.mp4'
+    }
+    lastV.load()
+    console.log(lastV)
     this.hideScrollHelper()
   }
 

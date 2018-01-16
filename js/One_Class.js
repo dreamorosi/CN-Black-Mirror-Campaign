@@ -72,7 +72,7 @@ class One {
     this.elements = {}
     this.fourth = {}
     this.prepareFirst()
-    this.video = document.querySelector('video')
+    this.video = document.querySelector('body > video')
     this.vidSource = this.video.querySelector('source')
     this.video.style.height = this.clientH
     this.video.style.width = this.clientW

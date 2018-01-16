@@ -110,8 +110,8 @@ function threeInit (scene = 0) {
 }
 
 document.onload = (function () {
-  // introInit()
+  introInit()
   // oneInit()
   // twoInit()
-  threeInit()
+  // threeInit()
 })()
