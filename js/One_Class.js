@@ -199,7 +199,7 @@ class One {
     let { age, time } = form.state.values
     if (age && time) {
       this.showResultButton()
-      this.toggleScrollHelper()
+      // this.toggleScrollHelper()
       this.prepareSecond()
     }
   }
@@ -209,9 +209,10 @@ class One {
     let textnode = document.createTextNode('Ver Resultados')
     this.resultButton.appendChild(textnode)
     this.scrollHelper.parentNode.appendChild(this.resultButton)
-    this.scrollHelper.addEventListener('click', this.submitForm)
+    // this.scrollHelper.addEventListener('click', this.submitForm)
     this.resultButton.addEventListener('click', this.submitForm)
     this.resultButton.style.opacity = '1'
+    this.hideScrollHelper()
   }
 
   removeResultButton () {
@@ -228,7 +229,7 @@ class One {
     if (time > 5) {
       let vida = document.querySelector('.vida')
       this.toggleElementOpacity(this.first.form)
-      this.toggleScrollHelper()
+      this.showScrollHelper()
       setTimeout(() => {
         this.scenes[0].style.display = 'none'
       }, 500)
@@ -240,7 +241,8 @@ class One {
     } else {
       form.state.values.daysPegado = Math.floor(hours / 24)
       form.state.values.yearsPegado = (form.state.values.daysPegado / 365).toFixed(1)
-      this.scrollHelper.removeEventListener('click', this.submitForm)
+      // this.scrollHelper.removeEventListener('click', this.submitForm)
+      this.showScrollHelper()
       this.hideFirst()
       this.setVideo(1)
     }

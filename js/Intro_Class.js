@@ -113,7 +113,10 @@ class Intro {
 
       let dir = 0
       if (this.isTouchDevice) {
-        let { clientY } = evt.touches[0]
+        let clientY = 0
+        if (evt.touches) {
+          clientY = evt.touches[0].clientY
+        }
         let yDown = this.scrollStatus.startScrollPos
         dir = clientY - yDown
       } else {

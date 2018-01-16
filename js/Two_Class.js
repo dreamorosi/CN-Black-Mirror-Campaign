@@ -235,7 +235,7 @@ class Two {
 
     setTimeout(() => {
       this.toggleScrollHelper()
-      this.scrollHelper.parentNode.addEventListener('click', this.hideFirst)
+      this.scrollHelper.addEventListener('click', this.hideFirst)
       this.scrollHelper.parentNode.style.background = 'rgba(0,0,0,.5)'
       this.prepareSecond()
     }, 500)
@@ -245,7 +245,7 @@ class Two {
     let { title, boxes } = this.first
 
     // remove evt listener from scrollHelper
-    this.scrollHelper.parentNode.removeEventListener('click', this.hideFirst)
+    this.scrollHelper.removeEventListener('click', this.hideFirst)
     // stop observer (if running)
     if (this.firstObserver) {
       boxes.forEach(box => this.firstObserver.unobserve(box))
@@ -263,6 +263,11 @@ class Two {
     }, 1100)
     // call next
     setTimeout(this.next, 1200)
+  }
+
+  showElementOpacity (el) {
+    el.node.style.opacity = '1'
+    el.state.isVisible = 1
   }
 
   observeFirst () {
@@ -285,7 +290,7 @@ class Two {
       let { target } = entry
       let { boxes } = this.first
       let idx = target.dataset.idx
-      this.toggleElementOpacity(boxes[idx])
+      this.showElementOpacity(boxes[idx])
       setTimeout(() => {
         boxes[idx].node.classList.add('show')
       }, 1000)
@@ -360,7 +365,7 @@ class Two {
 
     // Activate scrollHelper after 2 additional seconds
     setTimeout(() => {
-      this.scrollHelper.parentNode.addEventListener('click', this.shutdown)
+      this.scrollHelper.addEventListener('click', this.shutdown)
     }, 1000)
   }
 
@@ -368,7 +373,7 @@ class Two {
     let { boxes } = this.second
 
     // remove evt listener from scrollHelper
-    this.scrollHelper.parentNode.removeEventListener('click', this.shutdown)
+    this.scrollHelper.removeEventListener('click', this.shutdown)
     // fadeout content
     boxes.forEach(box => {
       this.toggleElementOpacity(box)

@@ -29,7 +29,8 @@ class Three {
     this.isTransitioning = 1
     this.isHelperVisible = 0
     this.scrollHelper = settings.scrollHelper
-
+    this.removeAllEventListenersFromElement(this.scrollHelper)
+    this.scrollHelper = document.querySelector('.scrollHelper img')
     if (!this.scrollHelper) {
       throw Error(`No scrollHelper element passed.`)
     }
@@ -54,6 +55,19 @@ class Three {
     this.vidSource = this.video.querySelector('source')
     this.video.style.height = this.clientH
     this.video.style.width = this.clientW
+    this.solutions = [[
+      0, 55, 45
+    ], [
+      1, 22, 80
+    ], [
+      1, 22, 80
+    ], [
+      1, 45, 55
+    ], [
+      0, 55, 45
+    ], [
+      1, 30, 70
+    ]]
     // this.prepareNormal()
     // this.prepareFinal()
 
@@ -217,6 +231,16 @@ class Three {
     this.scrollHelper.style.bottom = '35px'
   }
 
+  removeAllEventListenersFromElement (el) {
+    let clone = el.cloneNode()
+    // move all child elements from the original to the clone
+    while (el.firstChild) {
+      clone.appendChild(el.lastChild)
+    }
+
+    el.parentNode.replaceChild(clone, el)
+  }
+
   toggleStatusBar () {
     let { title, subtitle, progress } = this.statusBar
     if (title.state.isVisible) {
@@ -264,49 +288,35 @@ class Three {
     }
 
     questions.forEach(q => (q.node.style.display = 'none'))
-    let question = questions[currentQ]
-    question.node.style.display = 'flex'
-    // question.children[0]
-    question.children[0].node.addEventListener('click', this.handleClick, false)
-    question.children[1].node.addEventListener('click', this.handleClick, false)
+    this.currQuestion = questions[currentQ]
+    this.currQuestion.node.style.display = 'flex'
+    this.currQuestion.children[0].node.classList.remove('solution')
+    this.currQuestion.children[1].node.classList.remove('solution')
+    this.currQuestion.children[0].node.classList.remove('correct')
+    this.currQuestion.children[1].node.classList.remove('correct')
+    this.currQuestion.children[0].node.addEventListener('click', this.handleClick, false)
+    this.currQuestion.children[1].node.addEventListener('click', this.handleClick, false)
   }
 
   handleClick (e) {
-    let c = [[
-      0, 55, 45
-    ], [
-      1, 22, 80
-    ], [
-      1, 22, 80
-    ], [
-      1, 45, 55
-    ], [
-      0, 55, 45
-    ], [
-      1, 30, 70
-    ]]
+    this.currQuestion.children[0].node.removeEventListener('click', this.handleClick, false)
+    this.currQuestion.children[1].node.removeEventListener('click', this.handleClick, false)
 
-    let { questions, currentQ } = this
-    let question = questions[currentQ]
-    let results = c[currentQ]
-    question.children[0].node.classList.add('solution')
-    question.children[1].node.classList.add('solution')
-    question.children[0].node.removeEventListener('click', this.handleClick, false)
-    question.children[1].node.removeEventListener('click', this.handleClick, false)
-    question.children[results[0]].node.classList.add('correct')
+    let { currentQ } = this
+    let results = this.solutions[currentQ]
+    this.currQuestion.children[0].node.classList.add('solution')
+    this.currQuestion.children[1].node.classList.add('solution')
+    this.currQuestion.children[results[0]].node.classList.add('correct')
 
-    setTimeout(() => {
-      if (this.clientW > 500) {
-        question.children[0].node.style.width = c[currentQ][1] + '%'
-        question.children[1].node.style.width = c[currentQ][2] + '%'
-      } else {
-        // question.children[0].node.style.height = c[currentQ][1] + '%'
-        // question.children[1].node.style.height = c[currentQ][2] + '%'
-      }
-    }, 150)
+    if (this.clientW > 500) {
+      setTimeout(() => {
+        this.currQuestion.children[0].node.style.width = results[currentQ][1] + '%'
+        this.currQuestion.children[1].node.style.width = results[currentQ][2] + '%'
+      }, 150)
+    }
 
     this.showScrollHelper()
-    this.scrollHelper.addEventListener('click', this.advance)
+    this.scrollHelper.addEventListener('click', this.advance, false)
   }
 
   showFirstBlack () {
@@ -355,9 +365,9 @@ class Three {
     let black = document.querySelector('.slide.black3')
     black.style.display = 'none'
     let final = document.querySelector('.slide.final')
-    final.style.paddingTop = '50px'
     final.style.display = 'flex'
     this.video.pause()
+    this.video.style.display = 'none'
     let lastV = final.querySelector('video')
     let lastVsrc = lastV.querySelector('source')
     if (this.clientW > 500) {
@@ -366,7 +376,25 @@ class Three {
       lastVsrc.src = './videos/trailer_mobile.mp4'
     }
     lastV.load()
-    console.log(lastV)
+    let url = window.location.href
+    let shareP = final.querySelector('.likes p')
+    let fb = final.querySelector('.social a:nth-child(1)')
+    let tw = final.querySelector('.social a:nth-child(2)')
+    let wh = final.querySelector('.social a:nth-child(3)')
+    let tl = final.querySelector('.social a:nth-child(4)')
+    let fx = new TextScramble(shareP)
+    fx.setText('> Gánate un par de likes /')
+    fb.href = `https://www.facebook.com/dialog/share?&display=popup&href=${encodeURI(url)}`
+    tw.href = `https://twitter.com/intent/tweet?text=${encodeURI('Hello World')}&url=${encodeURI(url)}`
+    if (this.clientW > 500) {
+      wh.href = `https://web.whatsapp.com/send?text=${encodeURI(url)}`
+      this.scrollHelper.parentNode.style.display = 'none'
+      let overlay = document.querySelector('.overlay')
+      overlay.style.display = 'none'
+    } else {
+      wh.href = `whatsapp://send?text=${encodeURI(url)}`
+    }
+    tl.href = `https://t.me/share/url?url=${encodeURI(url)}`
     this.hideScrollHelper()
   }
 
@@ -407,13 +435,12 @@ class Three {
   advance () {
     if (this.currentQ < 5) {
       this.transitionStarted()
-      this.questions[this.currentQ].node.style.display = 'none'
       this.currentQ++
       this.showQuestion()
     } else {
-      this.questions[this.currentQ].node.style.display = 'none'
+      this.questions.forEach(q => (q.node.style.display = 'none'))
       this.statusBar.node.style.display = 'none'
-      this.scrollHelper.removeEventListener('click', this.advance)
+      this.scrollHelper.removeEventListener('click', this.advance, false)
       this.currentScene = 6
       this.showCurrent()
       console.log('show black')
