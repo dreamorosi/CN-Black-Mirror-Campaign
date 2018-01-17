@@ -65,6 +65,7 @@ class One {
     this.observeThirdHandler = this.observeThirdHandler.bind(this)
     this.observeFourthHandler = this.observeFourthHandler.bind(this)
     this.toggleElementOpacity = this.toggleElementOpacity.bind(this)
+    this.goBackToForm = this.goBackToForm.bind(this)
 
     this.first = { form: { state: {} } }
     this.second = {}
@@ -76,6 +77,7 @@ class One {
     this.vidSource = this.video.querySelector('source')
     this.video.style.height = this.clientH
     this.video.style.width = this.clientW
+    this.toggled = [false, false, false, false]
     // this.first.form.state.values = { daysPegado: 2500, yearsPegado: 7.5 }
     // this.prepareSecond()
     // this.prepareThird()
@@ -159,6 +161,9 @@ class One {
   showFirst () {
     this.scenes[0].style.display = 'flex'
     let { first } = this
+    if (this.toggled[0]) {
+      return
+    }
     this.toggleElementOpacity(this.first.form)
     setTimeout(() => {
       this.toggleElementOpacity(first.labels[0])
@@ -172,6 +177,7 @@ class One {
     setTimeout(() => {
       this.toggleElementOpacity(first.inputs[1])
     }, 400)
+    this.toggled[0] = true
     let { age, time } = first.form.state.values
     if (age && time) {
       this.showResultButton()
@@ -189,6 +195,11 @@ class One {
     this.hideScrollHelper()
     setTimeout(() => {
       this.scenes[0].style.display = 'none'
+      this.toggleElementOpacity(first.form)
+      this.toggleElementOpacity(first.labels[0])
+      this.toggleElementOpacity(first.inputs[0])
+      this.toggleElementOpacity(first.labels[1])
+      this.toggleElementOpacity(first.inputs[1])
     }, 500)
     setTimeout(this.next, 500)
   }
@@ -219,6 +230,16 @@ class One {
     this.resultButton.style.display = 'none'
   }
 
+  goBackToForm () {
+    let vida = document.querySelector('.vida')
+    let back = vida.querySelector('p')
+    back.removeEventListener('click', this.goBackToForm)
+    this.scenes[0].style.display = 'flex'
+    vida.style.display = 'none'
+    this.toggleElementOpacity(this.first.form)
+
+  }
+
   submitForm () {
     let statAge = 82
     let { form } = this.first
@@ -229,15 +250,13 @@ class One {
     if (time > 5) {
       let vida = document.querySelector('.vida')
       this.toggleElementOpacity(this.first.form)
-      this.showScrollHelper()
+      // this.showScrollHelper()
       setTimeout(() => {
         this.scenes[0].style.display = 'none'
       }, 500)
       vida.style.display = 'flex'
       let back = vida.querySelector('p')
-      back.addEventListener('click', () => {
-        window.location.reload()
-      })
+      back.addEventListener('click', this.goBackToForm)
     } else {
       form.state.values.daysPegado = Math.floor(hours / 24)
       form.state.values.yearsPegado = (form.state.values.daysPegado / 365).toFixed(1)
@@ -332,6 +351,10 @@ class One {
 
   showSecond () {
     this.scenes[1].style.display = 'flex'
+    if (this.toggled[1]) {
+      this.observeSecond()
+      return
+    }
     let { first, second } = this
     this.showElementOpacity(second.paragraphs[0])
     setTimeout(() => {
@@ -358,6 +381,7 @@ class One {
     setTimeout(() => {
       this.showElementOpacity(second.headings[1])
     }, 350)
+    this.toggled[1] = true
 
     if (this.clientW > 500) {
       setTimeout(() => {
@@ -380,12 +404,16 @@ class One {
       this.secondObserver.unobserve(this.second.graph.node)
     }
     // fadeout content
-    this.scenes[1].querySelector('.left-side').style.opacity = '0'
-    this.scenes[1].querySelector('.right-side').style.opacity = '0'
+    let left = this.scenes[1].querySelector('.left-side')
+    let right = this.scenes[1].querySelector('.right-side')
+    left.style.opacity = '0'
+    right.style.opacity = '0'
     let that = this
     // display none slide
     setTimeout(function () {
       that.scenes[1].style.display = 'none'
+      left.style.opacity = '1'
+      right.style.opacity = '1'
     }, 1100)
     // call next
     setTimeout(this.next, 1200)
@@ -410,14 +438,14 @@ class One {
       let { target } = entry
       let { boxes, spacers } = this.third
       let idx = target.dataset.idx
-      this.toggleElementOpacity(boxes[idx].children[0])
+      this.showElementOpacity(boxes[idx].children[0])
       setTimeout(() => {
-        this.toggleElementOpacity(boxes[idx].children[1])
+        this.showElementOpacity(boxes[idx].children[1])
       }, 1000)
 
       if (idx < 2) {
         setTimeout(() => {
-          this.toggleElementOpacity(spacers[idx])
+          this.showElementOpacity(spacers[idx])
         }, 2000)
       } else {
         setTimeout(() => {

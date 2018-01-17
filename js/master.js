@@ -111,6 +111,9 @@ function threeInit (scene = 0) {
 
 document.onload = (function () {
   introInit()
+  let cachebuster = Math.round(new Date().getTime() / 1000)
+  let srcUrl = `https://ad.doubleclick.net/ddm/trackimp/N186801.270714GRUPOZETAES/B20545691.212455443;dc_trk_aid=411670643;dc_trk_cid=95957327;ord=${cachebuster};dc_lat=;dc_rdid=;tag_for_child_directed_treatment=?`
+  document.querySelector('#adv').src = srcUrl
   // oneInit()
   // twoInit()
   // threeInit()

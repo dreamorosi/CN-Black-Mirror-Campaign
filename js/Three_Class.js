@@ -379,13 +379,14 @@ class Three {
     let url = window.location.href
     let shareP = final.querySelector('.likes p')
     let fb = final.querySelector('.social a:nth-child(1)')
+    let appId = document.querySelector('meta[property="fb:app_id"]').content
     let tw = final.querySelector('.social a:nth-child(2)')
     let wh = final.querySelector('.social a:nth-child(3)')
     let tl = final.querySelector('.social a:nth-child(4)')
     let fx = new TextScramble(shareP)
     fx.setText('> Gánate un par de likes /')
-    fb.href = `https://www.facebook.com/dialog/share?&display=popup&href=${encodeURI(url)}`
-    tw.href = `https://twitter.com/intent/tweet?text=${encodeURI('Hello World')}&url=${encodeURI(url)}`
+    fb.href = `https://www.facebook.com/dialog/share?&display=popup&href=${encodeURI(url)}&app_id=${appId}`
+    tw.href = `https://twitter.com/intent/tweet?url=${encodeURI(url)}`
     if (this.clientW > 500) {
       wh.href = `https://web.whatsapp.com/send?text=${encodeURI(url)}`
       this.scrollHelper.parentNode.style.display = 'none'
